@@ -208,7 +208,15 @@ public class CrudStatementInvoker extends StatementInvoker {
         TableName primaryTable = getPrimaryTable(tables);
         Schema schema = context.getSchema();
         LogicDatabase database = schema.getDatabase(databaseName);
-        return database.getTable(primaryTable.getTableName());
+
+        LogicTable table = database.getTable(primaryTable.getTableName());
+        if(table == null){
+            table = database.getTable(primaryTable.getTableName().replaceAll("`",""));
+        }
+        if(table == null){
+            throw new BigSqlException(300 , "table not exists  " + databaseName + "." + primaryTable.getTableName());
+        }
+        return table;
     }
 
     private TableName getPrimaryTable(List<TableName> tables){

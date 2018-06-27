@@ -23,7 +23,6 @@ public class StatementHelper {
     public final static Logger LOG = LoggerFactory.getLogger(StatementHelper.class);
 
     public static Statement parse(CommandType commandType,String sql)throws SqlParserException {
-        sql = sql.replaceAll("`","");
         if(CommandType.COM_INIT_DB.equals(commandType)){
             return new CommandStatement(sql);
         }else{

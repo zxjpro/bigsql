@@ -65,6 +65,7 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
         }else{
             TableName tableName = crudStatement.getTables().get(0);
             shardingTableName = tableName.getTableName();
+            shardingTableName = SqlUtil.realName(shardingTableName);
         }
 
         init();
@@ -222,7 +223,7 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
             if(this.shardingColumnNames.size() == 1){
                 for (ValueField valueField : valueFields) {
 
-                    if(shardingColumnNames.contains(valueField.getName())){
+                    if(shardingColumnNames.contains(SqlUtil.realName(valueField.getName()))){
                         if(valueField.getValues() != null && valueField.getValues().size() > 0){
                             this.hasShardingColumn = true;
                             return;

@@ -74,8 +74,9 @@ public class JdbcTest1 {
         System.out.println(i);
 
         connection.commit();
-
     }
+
+
 
 
     @Test

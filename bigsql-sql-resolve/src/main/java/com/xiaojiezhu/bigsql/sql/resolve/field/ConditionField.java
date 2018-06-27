@@ -29,14 +29,24 @@ public class ConditionField extends ValueField {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ConditionField)) return false;
-        if (!super.equals(o)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof ConditionField)){
+            return false;
+        }
+        if (!super.equals(o)){
+            return false;
+        }
 
         ConditionField that = (ConditionField) o;
 
-        if (operator != null ? !operator.equals(that.operator) : that.operator != null) return false;
-        if (values != null ? !values.equals(that.values) : that.values != null) return false;
+        if (operator != null ? !operator.equals(that.operator) : that.operator != null) {
+            return false;
+        }
+        if (values != null ? !values.equals(that.values) : that.values != null){
+            return false;
+        }
         return name != null ? name.equals(that.name) : that.name == null;
     }
 

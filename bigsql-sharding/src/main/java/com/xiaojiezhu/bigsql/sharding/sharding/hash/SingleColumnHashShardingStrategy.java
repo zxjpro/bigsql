@@ -4,6 +4,7 @@ import com.xiaojiezhu.bigsql.common.annotation.EnableStrategy;
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.common.exception.ShardingColumnNotExistException;
 import com.xiaojiezhu.bigsql.sharding.DataSourcePool;
+import com.xiaojiezhu.bigsql.sharding.SqlUtil;
 import com.xiaojiezhu.bigsql.sharding.rule.sharding.ShardingRule;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ValueField;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.CrudStatement;
@@ -37,7 +38,7 @@ public class SingleColumnHashShardingStrategy extends AbstractHashShardingStrate
         ValueField valueField = null;
         String shardingColumnName = this.shardingColumnNames.get(0);
         for (ValueField tmp : valueFields) {
-            if(shardingColumnName.equals(tmp.getName())){
+            if(shardingColumnName.equals(SqlUtil.realName(tmp.getName()))){
                 valueField = tmp;
                 break;
             }

@@ -1,7 +1,5 @@
 package com.xiaojiezhu.bigsql.util.codec;
 
-import sun.rmi.runtime.RuntimeUtil;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
