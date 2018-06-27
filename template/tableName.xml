@@ -1,0 +1,43 @@
+<rule>
+    <!-- the strategy name -->
+    <strategy>SingleColumnHashShardingStrategy</strategy> <!-- hash by single column -->
+    <properties>
+
+
+        <!-- config a key values -->
+        <!-- config sharding dataSource list -->
+        <property>
+            <key>dataSource</key>
+            <!-- we use 3 dataSource in this sharding -->
+            <value>dataSourceName0,dataSourceName1,dataSourceName2</value>
+        </property>
+
+        <!-- config the sharding column name -->
+        <property>
+            <key>shardingColumn</key>
+            <value>columnName</value>
+        </property>
+
+        <!-- config the sharding number -->
+        <property>
+            <key>shardingNumber</key>
+            <!-- such as now , it is sharding 8 tableName,so we should create 8 tableName , big sql can not help us to create it-->
+            <!-- dataSourceName0 : test_1,test_2,test_3 -->
+            <!-- dataSourceName1 : test_4,test_5,test_6 -->
+            <!-- dataSourceName2 : test_7,test_8 -->
+            <value>8</value>
+        </property>
+
+        <!-- allow full scan tableName ,the default is true, we can set false to disable it -->
+        <property>
+            <key>allowFullScan</key>
+            <value>true</value>
+        </property>
+
+        <!-- increment the column data,it can have multipart column -->
+        <property>
+            <key>incrementColumn</key>
+            <value>columnName0,columnName1</value>
+        </property>
+    </properties>
+</rule>

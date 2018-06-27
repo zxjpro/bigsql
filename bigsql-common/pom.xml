@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>bigsql</artifactId>
+        <groupId>com.xiaojiezhu.bigsql</groupId>
+        <version>0.01</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>bigsql-common</artifactId>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>com.xiaojiezhu.bigsql</groupId>
+            <artifactId>bigsql-model</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.xiaojiezhu.bigsql</groupId>
+            <artifactId>bigsql-util</artifactId>
+        </dependency>
+    </dependencies>
+
+
+</project>

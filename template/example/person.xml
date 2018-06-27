@@ -1,0 +1,33 @@
+<rule>
+    <!-- the strategy name -->
+    <strategy>SingleColumnHashShardingStrategy</strategy> <!-- hash by single column -->
+    <properties>
+
+        <!-- config a key values -->
+        <!-- config sharding dataSource list -->
+        <property>
+            <key>dataSource</key>
+            <!-- we use 3 dataSource in this sharding -->
+            <value>db0</value>
+        </property>
+
+        <!-- config the sharding column name -->
+        <property>
+            <key>shardingColumn</key>
+            <value>name</value>
+        </property>
+
+
+        <!-- config the sharding number -->
+        <property>
+            <key>shardingNumber</key>
+            <value>3</value>
+        </property>
+
+        <!-- increment the column data,it can have multipart column -->
+        <property>
+            <key>incrementColumn</key>
+            <value>id</value>
+        </property>
+    </properties>
+</rule>

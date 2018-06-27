@@ -1,0 +1,43 @@
+#!/bin/bash
+
+SERVER_NAME="big-sql"
+
+BIN_PATH=$(cd `dirname $0`;pwd)
+
+BASE_PATH=$(cd $BIN_PATH;cd ..;pwd)
+echo $BASE_PATH
+
+LIB_PATH=$BASE_PATH/lib
+
+JAVA_OPS="-Xms1024m -Xmx2048m"
+
+PARAM="-Dbigsql.conf=$BASE_PATH/conf/ -Dfile.encoding=UTF-8"
+
+
+CMD="java -jar $JAVA_OPS -Djava.ext.dirs=$LIB_PATH $PARAM $BASE_PATH/lib/bigsql-server.jar &"
+
+
+function start(){
+	echo "start $SERVER_NAME"
+	$CMD
+
+}
+
+function stop(){
+	echo "start $SERVER_NAME"
+}
+
+function restart(){
+	stop
+	sleep 2
+	start
+}
+
+case "$1" in
+	start)
+		start;;
+	stop)
+		stop;;
+	restart)
+		restart;;
+esac

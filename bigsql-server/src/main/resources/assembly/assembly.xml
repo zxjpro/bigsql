@@ -1,0 +1,57 @@
+<assembly>
+    <!-- 这个id如果有值的话，将会包含在生成的文件名中 -->
+    <!--<id>1.0</id>-->
+    <id></id>
+    <formats>
+        <!-- 打包类型是tar.gz，也可以是zip,war,jar -->
+        <format>tar.gz</format>
+    </formats>
+    <!--tar.gz压缩包下是否生成和项目名相同的根目录-->
+    <includeBaseDirectory>true</includeBaseDirectory>
+
+    <dependencySets>
+        <dependencySet>
+            <!--是否把本项目添加到依赖文件夹下-->
+            <useProjectArtifact>true</useProjectArtifact>
+            <outputDirectory>lib</outputDirectory>
+            <!--将scope为runtime的依赖包打包-->
+            <scope>runtime</scope>
+        </dependencySet>
+    </dependencySets>
+
+    <!--
+     添加的文件集合
+     -->
+    <fileSets>
+        <fileSet>
+            <!-- 打包前的目录 -->
+            <directory>bin</directory>
+            <!-- 打包后的目录 -->
+            <outputDirectory>bin</outputDirectory>
+            <!-- 在Linux中的文件权限 -->
+            <fileMode>0755</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>conf</directory>
+            <outputDirectory>conf</outputDirectory>
+            <fileMode>0644</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>target</directory>
+            <outputDirectory>lib</outputDirectory>
+            <!-- 代表着需要.jar文件 -->
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources</directory>
+            <outputDirectory>logs</outputDirectory>
+            <fileMode>0755</fileMode>
+            <!-- 排除这里面的文件，排除开发产生的文件，但是要创建这样的一个目录，生产环境的日志输出位置 -->
+            <excludes>
+                <exclude>**/*</exclude>
+            </excludes>
+        </fileSet>
+    </fileSets>
+</assembly>

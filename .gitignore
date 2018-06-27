@@ -1,0 +1,10 @@
+.idea
+*.iml
+out
+gen
+bigsql-server/logs/*
+logs/*
+*target/
+doc/.vuepress/dist/
+bigsql-server/conf/schema/
+bigsql-server/conf/datasource/

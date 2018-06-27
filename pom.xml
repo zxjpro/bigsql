@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.xiaojiezhu.bigsql</groupId>
+    <artifactId>bigsql</artifactId>
+    <packaging>pom</packaging>
+    <version>0.01</version>
+    <modules>
+        <module>bigsql-server</module>
+        <module>bigsql-util</module>
+        <module>bigsql-core</module>
+        <module>bigsql-model</module>
+        <module>bigsql-test</module>
+        <module>bigsql-sql-resolve</module>
+        <module>bigsql-common</module>
+        <module>bigsql-sharding</module>
+    </modules>
+
+    <properties>
+        <netty.version>4.1.24.Final</netty.version>
+        <slf4j.version>1.7.25</slf4j.version>
+        <mysql.version>5.1.46</mysql.version>
+        <jsqlparser.version>1.2</jsqlparser.version>
+        <druid.version>1.1.9</druid.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>druid</artifactId>
+                <version>${druid.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-all</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.xiaojiezhu.bigsql</groupId>
+                <artifactId>bigsql-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xiaojiezhu.bigsql</groupId>
+                <artifactId>bigsql-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xiaojiezhu.bigsql</groupId>
+                <artifactId>bigsql-model</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xiaojiezhu.bigsql</groupId>
+                <artifactId>bigsql-sharding</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xiaojiezhu.bigsql</groupId>
+                <artifactId>bigsql-sql-resolve</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xiaojiezhu.bigsql</groupId>
+                <artifactId>bigsql-common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+
+
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.10</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+    </dependencies>
+
+
+    <developers>
+        <developer>
+            <id>ZhuXiaoJie</id>
+            <name>ZhuXiaoJie</name>
+            <email>zxjother@163.com</email>
+        </developer>
+    </developers>
+
+
+    <build>
+
+        <finalName>camera-ctrl</finalName>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+
+        </plugins>
+
+
+
+    </build>
+
+
+</project>

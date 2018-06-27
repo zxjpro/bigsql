@@ -1,0 +1,26 @@
+<!-- the default xml type , this is master slave -->
+<default type="masterSlave">
+
+
+    <!-- the master slave strategy -->
+    <strategy>SimpleMasterSlaveStrategy</strategy>
+
+    <masterSlave>
+        <properties>
+
+            <!-- master datasource -->
+            <property>
+                <key>master</key>
+                <value>dataSourceName0,dataSourceName1</value>
+            </property>
+
+            <!-- slave datasource -->
+            <property>
+                <key>slave</key>
+                <value>dataSourceName0,dataSourceName1</value>
+            </property>
+
+        </properties>
+
+    </masterSlave>
+</default>
