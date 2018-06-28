@@ -6,6 +6,7 @@ import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat;
 import com.xiaojiezhu.bigsql.common.SqlConstant;
+import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.common.exception.SqlParserException;
 import com.xiaojiezhu.bigsql.model.constant.CommandType;
 import com.xiaojiezhu.bigsql.model.constant.Constant;
@@ -113,7 +114,8 @@ public class StatementHelper {
         Set<TableStat.Name> names = tables.keySet();
         for (TableStat.Name name : names) {
             if(name.toString().contains(".")){
-                return true;
+                //return true;
+                throw new BigSqlException(200 , "not allow use an other database");
             }
         }
         return false;
