@@ -8,7 +8,8 @@ public enum  CommandType {
 
     COM_INIT_DB(0x02),
     COM_QUERY(0x03),
-    COM_QUIT(0x01);
+    COM_QUIT(0x01),
+    COM_PING(0x0E);
 
     private int value;
 

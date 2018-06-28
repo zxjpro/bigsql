@@ -44,7 +44,7 @@
     </appenders>
     <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
     <loggers>
-        <logger name="com.xiaojiezhu.bigsql" level="info"></logger>
+        <logger name="com.xiaojiezhu.bigsql" level="debug"></logger>
         <logger name="DEBUG" level="debug"></logger>
         <logger name="DEBUG" level="debug"></logger>
 

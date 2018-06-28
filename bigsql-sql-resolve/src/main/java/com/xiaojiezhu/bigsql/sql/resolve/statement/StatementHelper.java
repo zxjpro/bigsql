@@ -26,7 +26,11 @@ public class StatementHelper {
         if(CommandType.COM_INIT_DB.equals(commandType)){
             return new CommandStatement(sql);
         }else{
-            return parseComQuery(sql);
+            if(isTransactionCommand(sql)){
+                return new TransactionStatement(sql);
+            }else{
+                return parseComQuery(sql);
+            }
         }
     }
 
@@ -113,7 +117,18 @@ public class StatementHelper {
             }
         }
         return false;
+    }
 
+
+    /**
+     * is this command be a transaction command
+     * @param cmd
+     * @return
+     */
+    public static boolean isTransactionCommand(String cmd){
+        return SqlConstant.OPEN_TRANSACTION.equalsIgnoreCase(cmd)
+                || SqlConstant.COMMIT_TRANSACTION.equalsIgnoreCase(cmd)
+                || SqlConstant.ROLLBACK_TRANSACTION.equalsIgnoreCase(cmd);
     }
 
 

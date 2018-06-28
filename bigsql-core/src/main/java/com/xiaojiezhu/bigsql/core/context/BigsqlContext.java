@@ -14,24 +14,17 @@ public interface BigsqlContext {
 
 
     /**
-     * get the current select schema
+     * get the connectionContext
      * @param channel
-     * @return if not select,return null
+     * @return
      */
-    String getCurrentDataBase(Channel channel);
-
-    /**
-     * when select schema , set a flag
-     * @param channel
-     * @param dataBase
-     */
-    void setCurrentDataBase(Channel channel,String dataBase);
+    ConnectionContext getConnectionContext(Channel channel);
 
     /**
      * on channel close,should clear the channel data
      * @param channel
      */
-    void removeChannelContext(Channel channel);
+    void removeConnectionContext(Channel channel);
 
 
     /**

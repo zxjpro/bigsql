@@ -1,6 +1,8 @@
 # select @@session.auto_increment_increment,@@license
 
 @@session.auto_increment_increment=1
+@@session.tx_read_only=0
+@@session.tx_isolation=REPEATABLE-READ
 @@character_set_client=utf8mb4
 @@character_set_connection=utf8mb4
 @@character_set_results=utf8mb4
@@ -20,7 +22,7 @@
 @@time_zone=SYSTEM
 @@tx_isolation=REPEATABLE-READ
 @@wait_timeout= 28800
-@@version_comment=Source distribution
+@@version_comment=author:朱小杰(ZhuXiaoJie)
 @@session.autocommit= 1
 @@character_set_database=utf8
 @@collation_database=latin1_swedish_ci

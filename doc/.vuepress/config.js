@@ -41,5 +41,5 @@ module.exports = {
 		repo: 'http://www.baidu.com', //它会在每个页面的右上角显示github的链接，它也可以是一个完整的url地址
   },
 	title : 'Bigsql中文文档',
-	description : '一个和语言无关的分布式数据库中单件'
+	description : '一个和语言无关的分布式数据库中间件'
 }

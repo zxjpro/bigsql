@@ -8,9 +8,8 @@ public class Constant {
     public static final int MYSQL_PROTOCOL_VERSION = 0x0A;
 
 
-//    public static final String SERVER_INFO = "5.5.59-bigsql 0.0.1";
-//    public static final String SERVER_INFO = "5.6.35-log";
     public static final String SERVER_INFO = "5.6.35-bigsql";
+    //public static final String SERVER_INFO = "bigsql-1.0";
 
     /**
      * 0x21 is utf8_general_ci

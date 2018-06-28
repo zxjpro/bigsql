@@ -21,8 +21,8 @@ import java.util.Map;
  * @author xiaojie.zhu
  */
 public class SimpleBigsqlContext implements BigsqlContext {
+    private final Map<Channel,ConnectionContext> connectionContextMap;
     private final BigsqlConfiguration configuration;
-    private final Map<Channel,String> databaseFlag = new HashMap<>();
     protected String confDirPath;
 
     private final DataSourcePool dataSourcePool;
@@ -33,6 +33,8 @@ public class SimpleBigsqlContext implements BigsqlContext {
 
 
     private SimpleBigsqlContext() throws Exception {
+        this.connectionContextMap = new HashMap<>();
+
         this.configuration = new DefaultBigsqlConfiguration();
 
         this.confDirPath = this.getBigsqlConfiguration().getConfDirPath();
@@ -55,19 +57,20 @@ public class SimpleBigsqlContext implements BigsqlContext {
         return context;
     }
 
+
     @Override
-    public String getCurrentDataBase(Channel channel) {
-        return databaseFlag.get(channel);
+    public ConnectionContext getConnectionContext(Channel channel) {
+        ConnectionContext connectionContext = connectionContextMap.get(channel);
+        if(connectionContext == null){
+            connectionContext = new SimpleConnectionContext();
+            connectionContextMap.put(channel,connectionContext);
+        }
+        return connectionContext;
     }
 
     @Override
-    public void setCurrentDataBase(Channel channel, String dataBase) {
-        databaseFlag.put(channel,dataBase);
-    }
-
-    @Override
-    public void removeChannelContext(Channel channel) {
-        databaseFlag.remove(channel);
+    public void removeConnectionContext(Channel channel) {
+        connectionContextMap.remove(channel);
     }
 
     @Override

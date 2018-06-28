@@ -42,4 +42,5 @@
 |303|执行了不支持的操作|``com.xiaojiezhu.bigsql.common.exception.NotSupportException``|
 |303|合并resultSet错误|``com.xiaojiezhu.bigsql.common.exception.MergeException``|
 |304|SQL不支持错误，与SQL解析错误的同不的地方是，SQL解析错误是语法错误|``com.xiaojiezhu.bigsql.common.exception.SqlNotSupportException``|
+|305|操作事务异常|``com.xiaojiezhu.bigsql.common.exception.TransactionException``|
 |400|外部系统错误||

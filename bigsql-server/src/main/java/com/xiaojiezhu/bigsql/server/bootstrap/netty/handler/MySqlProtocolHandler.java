@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 /**
  * @author xiaojie.zhu
@@ -93,7 +92,14 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
         if(!auth){
             auth(ctx, msg);
         }else{
-            MySqlCommandInputPacket commandPacket = new MySqlCommandInputPacket(new NettyByteBuffer(msg));
+            MySqlCommandInputPacket commandPacket = null;
+            try {
+                commandPacket = new MySqlCommandInputPacket(new NettyByteBuffer(msg));
+            } catch (Exception e) {
+                LOG.error("resolve protocol fail , " + e.getMessage() , e);
+                packetResponse.response(ctx , new MySqlErrorOutputPacket(1,400 , "" , "resolve protocol fail : " + e.getMessage()));
+            }
+
             String sql = commandPacket.getSql();
             if(sql != null){
                 LOG.info(sql);
@@ -110,6 +116,7 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
                     packetResponse.response(ctx , new MySqlErrorOutputPacket(1, 500 ,"" , e.getMessage()));
                     return;
                 }
+
                 InvokeResult invokeResult = execute(ctx, commandPacket.getCommandType(), statement);
                 if(invokeResult == null){
                     return;
@@ -118,6 +125,9 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
             }else{
                 if(CommandType.COM_QUIT.equals(commandPacket.getCommandType())){
                     LOG.info("客户端退出连接 [" + getRemoteAddress(ctx.channel()) + "]");
+                }else if(CommandType.COM_PING.equals(commandPacket.getCommandType())){
+                    // ping
+                    packetResponse.response(ctx,new MySqlOkOutputPacket(1));
                 }else{
                     LOG.warn("收到一个为空的SQL，这是代码有问题");
                 }
@@ -160,7 +170,14 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
     private void responseCommand(ChannelHandlerContext ctx, InvokeResult invokeResult) throws SQLException {
         if(invokeResult instanceof SelectInvokeResult){
             SelectInvokeResult selectInvokeResult = (SelectInvokeResult) invokeResult;
-            MySqlResultSetOutputPacket resultSetPacket = makeResultPacket(selectInvokeResult);
+            MySqlResultSetOutputPacket resultSetPacket = null;
+            try {
+                resultSetPacket = makeResultPacket(selectInvokeResult);
+            } catch (Exception e) {
+                LOG.error("generate result package fail ",e);
+                packetResponse.response(ctx,new MySqlErrorOutputPacket(1,400 ,"","generate result packet fail : " + e.getMessage()));
+                return;
+            }
             packetResponse.response(ctx,resultSetPacket);
         }else if(invokeResult instanceof ExecuteInvokeResult){
             ExecuteInvokeResult executeInvokeResult = (ExecuteInvokeResult) invokeResult;

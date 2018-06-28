@@ -36,6 +36,8 @@ public class MySqlCommandInputPacket extends MySqlInputPacket {
             this.sql = new String(cmdBytes);
         }else if(b == CommandType.COM_QUIT.getValue()){
             this.commandType = CommandType.COM_QUIT;
+        }else if(b == CommandType.COM_PING.getValue()){
+            this.commandType = CommandType.COM_PING;
         }else{
             //TODO : 未完成的协议
             throw new BigSqlException("not support sql command , flag: " + b);

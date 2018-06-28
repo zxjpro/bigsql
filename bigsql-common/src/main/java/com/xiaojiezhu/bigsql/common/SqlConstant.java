@@ -27,8 +27,10 @@ public class SqlConstant {
     public static final String LIMIT = "LIMIT";
     public static final String VALUES = "VALUES";
     public static final String SHOW_ENGINES = "SHOW ENGINES";
-    public static final String OPEN_TRANSACTION = "SET autocommit=0";
     public static final String FIELD_ALOUD = "`";
+    public static final String OPEN_TRANSACTION = "SET autocommit=0";
+    public static final String COMMIT_TRANSACTION = "commit";
+    public static final String ROLLBACK_TRANSACTION = "ROLLBACK";
 
 
 

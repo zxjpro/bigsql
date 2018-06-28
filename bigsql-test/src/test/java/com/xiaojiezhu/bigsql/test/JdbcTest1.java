@@ -66,7 +66,7 @@ public class JdbcTest1 {
     }
 
     @Test
-    public void tset8() throws SQLException {
+    public void test8() throws SQLException {
         connection.setAutoCommit(false);
 
         Statement statement = connection.createStatement();
@@ -75,6 +75,7 @@ public class JdbcTest1 {
 
         connection.commit();
     }
+
 
 
 
@@ -108,7 +109,7 @@ public class JdbcTest1 {
     }
 
 
-    private void printlnResult(ResultSet resultSet) throws SQLException {
+    public static void printlnResult(ResultSet resultSet) throws SQLException {
         int columnCount = resultSet.getMetaData().getColumnCount();
         while (resultSet.next()){
             for(int i = 1 ; i <= columnCount;i++){

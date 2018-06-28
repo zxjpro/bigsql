@@ -2,6 +2,7 @@ package com.xiaojiezhu.bigsql.core.invoker;
 
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.core.context.BigsqlContext;
+import com.xiaojiezhu.bigsql.core.context.ConnectionContext;
 import com.xiaojiezhu.bigsql.model.constant.CommandType;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.*;
 import io.netty.channel.Channel;
@@ -27,24 +28,25 @@ public class StatementInvokerHelper {
         }
 
         if(CommandType.COM_QUERY.equals(commandType)){
+            ConnectionContext connectionContext = context.getConnectionContext(channel);
             if(statement instanceof SimpleSelectStatement){
-                return new EnvironmentStatementInvoker(statement,context.getBigsqlConfiguration());
+                return new EnvironmentStatementInvoker(statement,context.getBigsqlConfiguration(),connectionContext);
             }else if(statement instanceof SettingStatement){
                 return new SettingStatementInvoker(statement);
             }else if(statement instanceof DefaultCommandSelectStatement){
                 //select
-                String currentDataBase = context.getCurrentDataBase(channel);
+                String currentDataBase = connectionContext.getCurrentDataBase();
                 return new CrudStatementInvoker(statement,context, bigsqlGroup,currentDataBase);
             }else if(statement instanceof InsertStatement){
                 //insert
-                String currentDataBase = context.getCurrentDataBase(channel);
+                String currentDataBase = connectionContext.getCurrentDataBase();
                 return new CrudStatementInvoker(statement,context,bigsqlGroup,currentDataBase);
             }else if(statement instanceof DeleteStatement){
                 //delete
-                String currentDataBase = context.getCurrentDataBase(channel);
+                String currentDataBase = connectionContext.getCurrentDataBase();
                 return new CrudStatementInvoker(statement,context,bigsqlGroup,currentDataBase);
             }else if(statement instanceof UpdateStatement){
-                String currentDataBase = context.getCurrentDataBase(channel);
+                String currentDataBase = connectionContext.getCurrentDataBase();
                 return new CrudStatementInvoker(statement,context,bigsqlGroup,currentDataBase);
             }else if(statement instanceof VariableStatement){
                 return new VariableStatementInvoker(statement,context.getBigsqlConfiguration());
@@ -55,7 +57,7 @@ public class StatementInvokerHelper {
                     return new ShowDataBaseInvoker(statement , context);
                 }else if(ShowComponentStatement.Type.TABLES.equals(showComponentStatement.getShowType())){
                     //show table
-                    return new ShowTableInvoker(statement,context.getCurrentDataBase(channel),context);
+                    return new ShowTableInvoker(statement,connectionContext.getCurrentDataBase(),context);
                 }else{
                     throw new BigSqlException("error showComponentStatement : " + statement);
                 }
@@ -66,6 +68,9 @@ public class StatementInvokerHelper {
                 return new NullResultInvoker(statement);
             }else if(statement instanceof ShowEngineStatement){
                 return new ShowComponentInvoker(statement,context);
+            }else if(statement instanceof TransactionStatement){
+                //transaction
+                return new TransactionInvoker(statement,connectionContext);
             }
         }else if(CommandType.COM_INIT_DB.equals(commandType)){
             return new InitDataBaseStatementInvoker(statement,context,channel);

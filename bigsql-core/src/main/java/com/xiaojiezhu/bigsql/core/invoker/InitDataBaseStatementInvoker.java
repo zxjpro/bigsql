@@ -2,6 +2,7 @@ package com.xiaojiezhu.bigsql.core.invoker;
 
 import com.xiaojiezhu.bigsql.common.exception.InvokeStatementException;
 import com.xiaojiezhu.bigsql.core.context.BigsqlContext;
+import com.xiaojiezhu.bigsql.core.context.ConnectionContext;
 import com.xiaojiezhu.bigsql.core.invoker.result.ExecuteInvokeResult;
 import com.xiaojiezhu.bigsql.core.invoker.result.InvokeResult;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.Statement;
@@ -24,7 +25,8 @@ public class InitDataBaseStatementInvoker extends StatementInvoker {
 
     @Override
     public InvokeResult invoke() throws InvokeStatementException {
-        context.setCurrentDataBase(channel,statement.getSql());
+        ConnectionContext connectionContext = context.getConnectionContext(channel);
+        connectionContext.setCurrentDataBase(statement.getSql());
         return new ExecuteInvokeResult(true);
     }
 }

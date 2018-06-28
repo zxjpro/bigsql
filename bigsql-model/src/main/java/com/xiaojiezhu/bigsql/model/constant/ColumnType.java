@@ -10,7 +10,10 @@ public enum  ColumnType {
     TINY(0x01),
     SHORT(0x02),
     LONG(0x03),
+
     BIGINT(-5),
+    TINYINT(-6),
+
     FLOAT(0x04),
     DOUBLE(0x05),
     NULL(0x06),

@@ -45,7 +45,7 @@ public abstract class AbstractProtocolHandler<I> extends SimpleChannelInboundHan
     @Override
     public final void channelInactive(ChannelHandlerContext ctx) throws Exception {
         long channelNumber = CHANNEL_COUNT.decrementAndGet();
-        bigsqlContext.removeChannelContext(ctx.channel());
+        bigsqlContext.removeConnectionContext(ctx.channel());
         LOG.info("a client leave : [" + getRemoteAddress(ctx.channel()) + "] , connection number : " + channelNumber);
         this.channelInactive0(ctx);
 
