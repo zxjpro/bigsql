@@ -7,11 +7,14 @@ import com.xiaojiezhu.bigsql.core.configuration.Entry;
 import com.xiaojiezhu.bigsql.core.context.ConnectionContext;
 import com.xiaojiezhu.bigsql.core.invoker.result.DefaultSelectInvokeResult;
 import com.xiaojiezhu.bigsql.core.invoker.result.InvokeResult;
+import com.xiaojiezhu.bigsql.core.type.Type;
+import com.xiaojiezhu.bigsql.core.type.TypeFactory;
+import com.xiaojiezhu.bigsql.core.type.VarcharType;
 import com.xiaojiezhu.bigsql.model.constant.ColumnType;
 import com.xiaojiezhu.bigsql.model.construct.Field;
+import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.SimpleSelectStatement;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.Statement;
-import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +57,8 @@ public class EnvironmentStatementInvoker extends StatementInvoker {
             String currentDataBase = connectionContext.getCurrentDataBase();
 
             Field field = Field.createField(SELECT_DATABASES_FIELD_NAME, ENVIRONMENT_MAX_SIZE, ColumnType.VARCHAR);
-            List<Object[]> rowData = new LinkedList<>();
-            rowData.add(new Object[]{currentDataBase});
+            List<Type[]> rowData = new LinkedList<>();
+            rowData.add(new Type[]{new VarcharType(currentDataBase)});
             BigsqlResultSet resultSet = BigsqlResultSet.createInstance(Arrays.asList(field), rowData);
             this.result = DefaultSelectInvokeResult.createInstance(resultSet);
             return this.result;
@@ -72,8 +75,8 @@ public class EnvironmentStatementInvoker extends StatementInvoker {
                 if (this.statement instanceof SimpleSelectStatement) {
                     SimpleSelectStatement simpleSelectStatement = (SimpleSelectStatement) statement;
                     List<AliasField> queryField = simpleSelectStatement.getQueryField();
-                    List<Object[]> rowData = new LinkedList<>();
-                    Object[] row = new Object[queryField.size()];
+                    List<Type[]> rowData = new LinkedList<>();
+                    Type[] row = new Type[queryField.size()];
                     List<Field> fields = new ArrayList<>(queryField.size());
                     for (int i = 0; i < queryField.size(); i++) {
                         AliasField aliasField = queryField.get(i);
@@ -87,7 +90,7 @@ public class EnvironmentStatementInvoker extends StatementInvoker {
                         field.setFieldTypeName(entry.getColumnType().toString());
 
                         fields.add(field);
-                        row[i] = entry.getValue();
+                        row[i] = TypeFactory.getType(entry.getValue());
                     }
                     rowData.add(row);
 

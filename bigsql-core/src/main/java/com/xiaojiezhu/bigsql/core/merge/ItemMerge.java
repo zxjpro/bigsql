@@ -4,6 +4,7 @@ package com.xiaojiezhu.bigsql.core.merge;
 import com.xiaojiezhu.bigsql.common.exception.MergeException;
 import com.xiaojiezhu.bigsql.core.BigsqlResultSet;
 import com.xiaojiezhu.bigsql.core.ResultSetUtil;
+import com.xiaojiezhu.bigsql.core.type.Type;
 import com.xiaojiezhu.bigsql.model.construct.Field;
 import com.xiaojiezhu.bigsql.util.Asserts;
 import org.slf4j.Logger;
@@ -34,7 +35,7 @@ public class ItemMerge implements Merge {
     public ResultSet merge() throws MergeException {
         try {
             List<Field> fields = ResultSetUtil.getFields(databaseName, tableName, resultSets.get(0));
-            List<Object[]> rowData = ResultSetUtil.getRowData(resultSets);
+            List<Type[]> rowData = ResultSetUtil.getRowData(resultSets);
             BigsqlResultSet resultSet = BigsqlResultSet.createInstance(fields, rowData);
             return resultSet;
         } catch (SQLException e) {

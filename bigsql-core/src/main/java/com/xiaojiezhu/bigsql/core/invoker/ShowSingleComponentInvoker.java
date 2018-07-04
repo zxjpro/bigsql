@@ -6,6 +6,8 @@ import com.xiaojiezhu.bigsql.core.configuration.BigsqlConfiguration;
 import com.xiaojiezhu.bigsql.core.invoker.result.DefaultSelectInvokeResult;
 import com.xiaojiezhu.bigsql.core.invoker.result.InvokeResult;
 import com.xiaojiezhu.bigsql.core.schema.Schema;
+import com.xiaojiezhu.bigsql.core.type.Type;
+import com.xiaojiezhu.bigsql.core.type.VarcharType;
 import com.xiaojiezhu.bigsql.model.constant.ColumnType;
 import com.xiaojiezhu.bigsql.model.construct.Field;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.Statement;
@@ -44,13 +46,13 @@ public abstract class ShowSingleComponentInvoker extends StatementInvoker {
      */
     protected BigsqlResultSet getDataResultSet() {
         Set<String> databases = this.getData();
-        List<Object[]> rowData = null;
+        List<Type[]> rowData = null;
         if(databases == null || databases.size() == 0){
             rowData = new ArrayList<>(1);
         }else{
             rowData  = new LinkedList<>();
             for (String database : databases) {
-                rowData.add(new Object[]{database});
+                rowData.add(new Type[]{new VarcharType(database)});
             }
         }
 

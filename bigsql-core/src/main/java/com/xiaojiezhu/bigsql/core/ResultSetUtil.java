@@ -1,5 +1,7 @@
 package com.xiaojiezhu.bigsql.core;
 
+import com.xiaojiezhu.bigsql.core.type.Type;
+import com.xiaojiezhu.bigsql.core.type.TypeFactory;
 import com.xiaojiezhu.bigsql.model.construct.Field;
 
 import java.sql.ResultSet;
@@ -14,23 +16,23 @@ import java.util.List;
  */
 public class ResultSetUtil {
 
-    public static List<Object[]> getRowData(ResultSet resultSet) throws SQLException {
-        List<Object[]> rowData = new ArrayList<>();
+    public static List<Type[]> getRowData(ResultSet resultSet) throws SQLException {
+        List<Type[]> rowData = new ArrayList<>();
         int columnCount = resultSet.getMetaData().getColumnCount();
         while (resultSet.next()){
-            Object[] data = new Object[columnCount];
+            Type[] data = new Type[columnCount];
             for(int i = 1 ; i <= columnCount ; i ++){
-                data[i - 1] = resultSet.getObject(i);
+                data[i - 1] = TypeFactory.getType(resultSet.getObject(i));
             }
             rowData.add(data);
         }
         return rowData;
     }
 
-    public static List<Object[]> getRowData(List<ResultSet> resultSets) throws SQLException{
-        List<Object[]> rows = new LinkedList<>();
+    public static List<Type[]> getRowData(List<ResultSet> resultSets) throws SQLException{
+        List<Type[]> rows = new LinkedList<>();
         for (ResultSet resultSet : resultSets) {
-            List<Object[]> rowData = getRowData(resultSet);
+            List<Type[]> rowData = getRowData(resultSet);
             rows.addAll(rowData);
         }
         return rows;

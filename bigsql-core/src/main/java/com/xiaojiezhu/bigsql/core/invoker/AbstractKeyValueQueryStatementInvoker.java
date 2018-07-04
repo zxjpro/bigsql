@@ -6,6 +6,8 @@ import com.xiaojiezhu.bigsql.core.configuration.BigsqlConfiguration;
 import com.xiaojiezhu.bigsql.core.configuration.Entry;
 import com.xiaojiezhu.bigsql.core.invoker.result.DefaultSelectInvokeResult;
 import com.xiaojiezhu.bigsql.core.invoker.result.InvokeResult;
+import com.xiaojiezhu.bigsql.core.type.Type;
+import com.xiaojiezhu.bigsql.core.type.TypeFactory;
 import com.xiaojiezhu.bigsql.model.construct.Field;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.Statement;
 import org.slf4j.Logger;
@@ -52,14 +54,14 @@ public abstract class AbstractKeyValueQueryStatementInvoker extends StatementInv
             if(result == null){
                 List<Field> fields = this.getQueryFields();
                 List<String> keys = getKeys();
-                List<Object[]> rowData = new LinkedList<>();
+                List<Type[]> rowData = new LinkedList<>();
                 for(int i = 0 ; i < keys.size() ; i ++){
                     String key = keys.get(i);
-                    Object[] row = new Object[fields.size()];
+                    Type[] row = new Type[fields.size()];
                     Entry entry = this.getValue(key);
                     if(entry != null){
-                        row[0] = key;
-                        row[1] = entry.getValue();
+                        row[0] = TypeFactory.getType(key);
+                        row[1] = TypeFactory.getType(entry.getValue());
                     }
                     rowData.add(row);
                 }

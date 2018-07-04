@@ -3,6 +3,7 @@ package com.xiaojiezhu.bigsql.core;
 
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.common.exception.SqlParserException;
+import com.xiaojiezhu.bigsql.core.type.Type;
 import com.xiaojiezhu.bigsql.model.constant.ColumnType;
 import com.xiaojiezhu.bigsql.model.construct.Field;
 import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
@@ -24,9 +25,9 @@ public class BigsqlResultSet implements ResultSet {
     public static final RuntimeException E = new RuntimeException("can not call this method");
     private List<Field> fields;
     private BigsqlResultSetMetaData metaData;
-    private List<Object[]> rowData;
-    private Iterator<Object[]> iterator;
-    private Object[] current;
+    private List<Type[]> rowData;
+    private Iterator<Type[]> iterator;
+    private Type[] current;
     private Map<String,Integer> mapping = new HashMap<>();
 
     /**
@@ -39,7 +40,7 @@ public class BigsqlResultSet implements ResultSet {
     private BigsqlResultSet() {
     }
 
-    public static BigsqlResultSet createInstance(List<Field> fields,List<Object[]> rowData){
+    public static BigsqlResultSet createInstance(List<Field> fields,List<Type[]> rowData){
         BigsqlResultSet resultSet = new BigsqlResultSet();
         resultSet.fields = fields;
         resultSet.metaData = BigsqlResultSetMetaData.createInstance(fields);
@@ -58,15 +59,15 @@ public class BigsqlResultSet implements ResultSet {
         for (AliasField aliasField : queryField) {
             fields.add(Field.createField(aliasField.getAsName(),64,ColumnType.VARCHAR));
         }
-        List<Object[]> rowData = new ArrayList<>(1);
+        List<Type[]> rowData = new ArrayList<>(1);
         return createInstance(fields,rowData);
     }
 
 
-    private void setRowData(List<Object[]> rowData){
+    private void setRowData(List<Type[]> rowData){
         this.rowData = rowData;
         if(rowData != null){
-            this.iterator = rowData.iterator();
+            this.iterator = this.rowData.iterator();
         }
     }
 
@@ -88,8 +89,8 @@ public class BigsqlResultSet implements ResultSet {
             throw new BigSqlException("the current data is null");
         }
         try {
-            Object obj = current[columnIndex - 1];
-            return obj;
+            Type type = current[columnIndex - 1];
+            return type.getValue();
         } catch (Exception e) {
             throw new IndexOutOfBoundsException("the columnIndex:" + columnIndex + " is out of " + current.length);
         }
@@ -110,7 +111,8 @@ public class BigsqlResultSet implements ResultSet {
             throw new SqlParserException("not find field :　" + fieldAsName);
         }
 
-        return current[index - 1];
+        Type<?> type = current[index - 1];
+        return type.getValue();
 
     }
 

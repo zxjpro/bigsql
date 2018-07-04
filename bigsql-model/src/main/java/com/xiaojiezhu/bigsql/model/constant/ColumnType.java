@@ -13,6 +13,7 @@ public enum  ColumnType {
 
     BIGINT(-5),
     TINYINT(-6),
+    VARBINARY(-7),
 
     FLOAT(0x04),
     DOUBLE(0x05),

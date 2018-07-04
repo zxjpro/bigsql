@@ -4,6 +4,8 @@ import com.xiaojiezhu.bigsql.common.exception.InvokeStatementException;
 import com.xiaojiezhu.bigsql.core.BigsqlResultSet;
 import com.xiaojiezhu.bigsql.core.invoker.result.DefaultSelectInvokeResult;
 import com.xiaojiezhu.bigsql.core.invoker.result.InvokeResult;
+import com.xiaojiezhu.bigsql.core.type.Type;
+import com.xiaojiezhu.bigsql.core.type.TypeFactory;
 import com.xiaojiezhu.bigsql.model.constant.ColumnType;
 import com.xiaojiezhu.bigsql.model.construct.Field;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.ShowCreateTableStatement;
@@ -34,8 +36,8 @@ public class ShowCreateTableInvoker extends StatementInvoker {
             fields.add(Field.createField("TableName",64, ColumnType.VARCHAR));
             fields.add(Field.createField("Create Table",2048,ColumnType.VARCHAR));
 
-            List<Object[]> rowData = new ArrayList<>(1);
-            rowData.add(new Object[]{tableName,""});
+            List<Type[]> rowData = new ArrayList<>(1);
+            rowData.add(TypeFactory.getType( tableName,""));
 
             BigsqlResultSet resultSet = BigsqlResultSet.createInstance(fields, rowData);
             return DefaultSelectInvokeResult.createInstance(resultSet);

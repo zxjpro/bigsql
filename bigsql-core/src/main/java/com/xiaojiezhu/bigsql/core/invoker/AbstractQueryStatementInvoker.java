@@ -6,6 +6,8 @@ import com.xiaojiezhu.bigsql.core.configuration.BigsqlConfiguration;
 import com.xiaojiezhu.bigsql.core.configuration.Entry;
 import com.xiaojiezhu.bigsql.core.invoker.result.DefaultSelectInvokeResult;
 import com.xiaojiezhu.bigsql.core.invoker.result.InvokeResult;
+import com.xiaojiezhu.bigsql.core.type.Type;
+import com.xiaojiezhu.bigsql.core.type.TypeFactory;
 import com.xiaojiezhu.bigsql.model.construct.Field;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.Statement;
 import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
@@ -44,9 +46,9 @@ public abstract class AbstractQueryStatementInvoker extends StatementInvoker {
                 List<AliasField> queryField = this.getQueryFields();
 
                 List<Field> fields = new ArrayList<>(queryField.size());
-                List<Object[]> rowData = new LinkedList<>();
+                List<Type[]> rowData = new LinkedList<>();
                 for(int i = 0 ; i < queryField.size() ; i ++){
-                    Object[] row = new Object[queryField.size()];
+                    Type[] row = new Type[queryField.size()];
                     AliasField aliasField = queryField.get(i);
                     Field field = new Field();
                     field.setAsName(aliasField.getAsName());
@@ -58,7 +60,7 @@ public abstract class AbstractQueryStatementInvoker extends StatementInvoker {
                     if(entry != null){
                         field.setFieldType(entry.getColumnType().getValue());
                         field.setFieldTypeName(entry.getColumnType().toString());
-                        row[i] = entry.getValue();
+                        row[i] = TypeFactory.getType(entry.getValue());
                     }
                     fields.add(field);
 

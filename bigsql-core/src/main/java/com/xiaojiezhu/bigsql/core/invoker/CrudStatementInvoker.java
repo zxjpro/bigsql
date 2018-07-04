@@ -70,7 +70,7 @@ public class CrudStatementInvoker extends StatementInvoker {
             try {
                 invokeResult = invokeTable(strategyTable);
             } catch (Exception e) {
-                throw new InvokeStatementException("invoke table fail " , e);
+                throw new InvokeStatementException("invoke table fail : " + e.getMessage() , e);
             }
             return invokeResult;
         }else{
