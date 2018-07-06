@@ -25,3 +25,5 @@ footer: apache Licensed 2 | Copyright © 2018-present 朱小杰
 
 所以无论是java,.net,python,php,c/c++,nodejs等，都可以在不修改任何代码的情况下使用它，无论是否使用了任何框架
 
+![](http://wx4.sinaimg.cn/mw690/005ZQTvlgy1ft0iupn8kaj30rw0jb3zp.jpg)
+
