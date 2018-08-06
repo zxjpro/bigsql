@@ -16,7 +16,7 @@ import java.util.List;
  * select statement
  * @author xiaojie.zhu
  */
-public class DefaultCommandSelectStatement extends DefaultCurdStatement implements CommandSelectStatement,CrudStatement,ConditionStatement {
+public final class DefaultCommandSelectStatement extends DefaultCurdStatement implements CommandSelectStatement,ConditionStatement {
     protected boolean responseNull;
     /**
      * is force read master database

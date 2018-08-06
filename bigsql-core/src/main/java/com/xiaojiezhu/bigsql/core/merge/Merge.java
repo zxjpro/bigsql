@@ -9,5 +9,10 @@ import java.sql.ResultSet;
  */
 public interface Merge {
 
+    /**
+     * merge the multipart ResultSet
+     * @return
+     * @throws MergeException
+     */
     ResultSet merge()throws MergeException;
 }
