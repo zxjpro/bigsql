@@ -14,6 +14,12 @@ public class SortField implements Field {
 
     public SortField(String name) {
         this.name = name;
+        this.asc = true;
+    }
+
+    public SortField(String name, boolean asc) {
+        this.name = name;
+        this.asc = asc;
     }
 
     @Override

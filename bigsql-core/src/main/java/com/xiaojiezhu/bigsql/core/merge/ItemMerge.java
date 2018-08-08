@@ -20,9 +20,9 @@ import java.util.List;
  */
 public class ItemMerge implements Merge {
     public final static Logger LOG = LoggerFactory.getLogger(ItemMerge.class);
-    private List<ResultSet> resultSets;
     private String databaseName;
     private String tableName;
+    private List<ResultSet> resultSets;
 
     public ItemMerge( String databaseName, String tableName,List<ResultSet> resultSets) {
         Asserts.collectionIsNotNull(resultSets,"ResultSet can not be null");

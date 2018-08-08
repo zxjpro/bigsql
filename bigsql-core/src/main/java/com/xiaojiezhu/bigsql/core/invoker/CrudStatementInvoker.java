@@ -11,6 +11,7 @@ import com.xiaojiezhu.bigsql.core.invoker.result.ExecuteInvokeResult;
 import com.xiaojiezhu.bigsql.core.invoker.result.InvokeResult;
 import com.xiaojiezhu.bigsql.core.merge.ItemMerge;
 import com.xiaojiezhu.bigsql.core.merge.Merge;
+import com.xiaojiezhu.bigsql.core.merge.MergeFactory;
 import com.xiaojiezhu.bigsql.core.schema.Schema;
 import com.xiaojiezhu.bigsql.core.schema.database.LogicDatabase;
 import com.xiaojiezhu.bigsql.core.schema.table.LogicTable;
@@ -142,7 +143,7 @@ public class CrudStatementInvoker extends StatementInvoker {
     private InvokeResult invokeShardingTable(ShardingStrategy shardingStrategy,Executor<?> executor,String tableName){
         List<ExecuteBlock> executeBlockList = shardingStrategy.getExecuteBlockList();
         Asserts.collectionIsNotNull(executeBlockList,"execute block list can not be null");
-        LOG.debug("sharding sql list : " + executeBlockList);
+        //LOG.debug("sharding sql list : " + executeBlockList);
 
         return executeResult(executor, tableName, executeBlockList);
     }
@@ -158,7 +159,8 @@ public class CrudStatementInvoker extends StatementInvoker {
     private InvokeResult executeResult(Executor<?> executor, String tableName, List<ExecuteBlock> executeBlockList) {
         if(CrudType.SELECT.equals(((CrudStatement) statement).getCrudType())){
             List<ResultSet> executeResult = getExecuteResult(executor,executeBlockList);
-            Merge merge = new ItemMerge(databaseName,tableName,executeResult);
+
+            Merge merge = MergeFactory.getMerge(databaseName, tableName, (DefaultCommandSelectStatement) statement, executeResult);
             ResultSet resultSet = merge.merge();
             return DefaultSelectInvokeResult.createInstance(resultSet);
         }else{

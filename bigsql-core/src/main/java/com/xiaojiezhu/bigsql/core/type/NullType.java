@@ -24,4 +24,9 @@ public class NullType implements Type {
     public static NullType getInstance(){
         return INSTANCE;
     }
+
+    @Override
+    public int compareTo(Object o) {
+        return 1;
+    }
 }

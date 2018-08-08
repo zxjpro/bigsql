@@ -5,7 +5,7 @@ package com.xiaojiezhu.bigsql.core.type;
  * the mysql column type
  * @author xiaojie.zhu <br>
  */
-public interface Type<T> {
+public interface Type<T> extends Comparable<Type>{
 
     /**
      * get the value

@@ -33,12 +33,18 @@ public class ValueField extends SimpleField {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ValueField)) return false;
+        if (this == o){
+            return true;
+        }
+        if (!(o instanceof ValueField)){
+            return false;
+        }
 
         ValueField that = (ValueField) o;
 
-        if (values != null ? !values.equals(that.values) : that.values != null) return false;
+        if (values != null ? !values.equals(that.values) : that.values != null){
+            return false;
+        }
         return name != null ? name.equals(that.name) : that.name == null;
     }
 
