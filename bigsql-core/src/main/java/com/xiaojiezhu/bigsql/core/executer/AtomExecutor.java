@@ -57,7 +57,7 @@ public class AtomExecutor implements Runnable{
         synchronized (lock){
             executeResults.add(executeResult);
             cd.countDown();
-            LOG.info("atom execute success : " + Thread.currentThread().getName());
+            LOG.debug("atom execute success : " + Thread.currentThread().getName());
         }
 
     }

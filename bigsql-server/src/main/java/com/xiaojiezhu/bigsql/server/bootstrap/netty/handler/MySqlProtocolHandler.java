@@ -111,7 +111,7 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
                     LOG.error("sql parser error : " + e.getMessage());
                     packetResponse.response(ctx , new MySqlErrorOutputPacket(1,e.getCode(),"",e.getMessage()));
                     return;
-                }catch (Exception e){
+                }catch (Throwable e){
                     LOG.error("sql parser error : " + e.getMessage());
                     packetResponse.response(ctx , new MySqlErrorOutputPacket(1, 500 ,"" , e.getMessage()));
                     return;

@@ -1,6 +1,7 @@
 package com.xiaojiezhu.bigsql.test;
 
 import java.sql.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * time 2018/6/26 17:26
@@ -9,53 +10,99 @@ import java.sql.*;
  */
 public class ConcurrentTest {
 
-    public static void main(String[] args) throws Exception {
-        Connection connection = createConnection();
-        connection.setAutoCommit(false);
-        Statement statement = connection.createStatement();
+    static boolean tx = true;
+    static AtomicLong count = new AtomicLong();
 
-        String sql = "insert into person(name,age,create_time) values('999',999,now())";
-        ResultSet resultSet = statement.executeQuery(sql);
-        connection.commit();
+    public static void main(String[] args) throws Exception {
+        insert();
     }
 
+
     public static void insert() throws Exception {
-        int threadNum = 20;
+        int threadNum = 100;
         for (int i = 0 ; i < threadNum ; i ++){
-            Connection connection = createConnection();
-            Thread thread = new Thread(new Insert(i , connection));
-            thread.setName("test-" + i);
+            Thread thread = new Thread(new Insert());
+            thread.setName("thread-" + i);
             thread.start();
         }
     }
 
-    public static Connection createConnection() throws Exception {
-        return ConnectionUtil.get222();
+    public static Connection createConnection()  {
+        try {
+            return ConnectionUtil.get231();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public static class Insert implements Runnable{
-        private Connection connection;
-        private int i;
+        private int txN = 10;
 
-        public Insert(int i , Connection connection) {
-            this.i = i;
-            this.connection = connection;
+        public Insert() {
         }
 
         @Override
         public void run() {
-            for(int j = 0 ; j < 100000 ; j ++){
-                String sql = "insert into person(name,age,create_time) values(?,"+j+",now())";
-                try {
-                    PreparedStatement statement = connection.prepareStatement(sql);
-                    statement.setString(1 , "name-" + this.i + "-" + j);
-                    int i = statement.executeUpdate();
-                    if(i != 1){
-                        System.out.println("errrr");
+            for(int i = 0 ; i < 5000 ; i ++){
+                Connection connection = createConnection();
+                if(tx){
+                    try {
+                        connection.setAutoCommit(false);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
+                }
+
+                String sql = "insert into person_1(name,age,sex,tel,create_time) values(?,"+count.get()+",?,?,now())";
+                PreparedStatement statement = null;
+                try {
+                    statement = connection.prepareStatement(sql);
                 } catch (SQLException e) {
                     e.printStackTrace();
                 }
+
+
+                for(int j = 0 ; j < txN ; j++){
+                    long val = count.incrementAndGet();
+
+                    System.out.println(val);
+
+                    long start = System.currentTimeMillis();
+//                    String sql = "insert into person(name,age,sex,tel,create_time) values(?,"+j+",?,?,now())";
+
+                    try {
+
+                        statement.setString(1 , Thread.currentThread().getName() + ":" + j);
+                        statement.setInt(2, (int) (val % 2));
+                        statement.setString(3,"tel:" + val);
+
+                        statement.execute();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+
+                    long end = System.currentTimeMillis();
+
+                    System.out.println("=======" + (end - start));
+                }
+
+                if(tx){
+                    try {
+                        connection.commit();
+
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
+
             }
         }
     }

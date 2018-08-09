@@ -126,39 +126,50 @@ class ReuseTxConnectionPool implements TxConnectionPool {
         synchronized (lock){
             if(this.autoCommit){
                 this.complete = true;
-                try {
-                    this.close();
-                } catch (IOException e) {
-                    throw new TransactionException("close connection fail" , e);
-                }
+
+                this.close0();
             }else{
-                this.commitTransactionReal();
+                try {
+                    this.commitTransactionReal();
+                } finally {
+                    this.close0();
+
+                }
             }
         }
 
     }
 
+
+
+    private void close0() {
+        try {
+            this.close();
+        } catch (IOException e) {
+            throw new TransactionException("close connection fail" , e);
+        }
+    }
+
+    /**
+     * real commit
+     */
     private void commitTransactionReal() {
-        this.complete = true;
         this.checkOver();
+        this.complete = true;
 
         TransactionException ex = null;
-        Connection connection;
         Iterator<Map.Entry<String, Queue<Connection>>> iterator = reusePool.entrySet().iterator();
 
         while (iterator.hasNext()){
             Map.Entry<String, Queue<Connection>> entry = iterator.next();
             Queue<Connection> connections = entry.getValue();
 
-
-            while ((connection = connections.peek()) != null){
-
+            for (Connection connection : connections) {
                 try {
                     connection.commit();
                 } catch (SQLException e) {
                     ex = new TransactionException("commit connection fail " , e);
                 }
-
             }
         }
         //for each over
@@ -175,33 +186,41 @@ class ReuseTxConnectionPool implements TxConnectionPool {
         }
 
         synchronized (lock){
-            this.checkOver();
-            this.complete = true;
+            try {
+                this.rollbackTransactionReal();
+            } finally {
+                this.close0();
+            }
+        }
+    }
 
-            TransactionException ex = null;
-            Connection connection;
-            Iterator<Map.Entry<String, Queue<Connection>>> iterator = reusePool.entrySet().iterator();
+    /**
+     * real rollback
+     */
+    private void rollbackTransactionReal() {
+        this.checkOver();
+        this.complete = true;
 
-            while (iterator.hasNext()){
-                Map.Entry<String, Queue<Connection>> entry = iterator.next();
-                Queue<Connection> connections = entry.getValue();
+        TransactionException ex = null;
+        Iterator<Map.Entry<String, Queue<Connection>>> iterator = reusePool.entrySet().iterator();
 
+        while (iterator.hasNext()){
+            Map.Entry<String, Queue<Connection>> entry = iterator.next();
+            Queue<Connection> connections = entry.getValue();
 
-                while ((connection = connections.peek()) != null){
-
-                    try {
-                        connection.rollback();
-                    } catch (SQLException e) {
-                        ex = new TransactionException("rollback connection fail " , e);
-                    }
-
+            for (Connection connection : connections) {
+                try {
+                    connection.rollback();
+                } catch (SQLException e) {
+                    ex = new TransactionException("rollback connection fail " , e);
                 }
             }
-            //for each over
 
-            if(ex != null){
-                throw ex;
-            }
+        }
+        //for each over
+
+        if(ex != null){
+            throw ex;
         }
     }
 

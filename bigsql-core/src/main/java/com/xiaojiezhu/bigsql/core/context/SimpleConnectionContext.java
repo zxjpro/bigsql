@@ -34,5 +34,10 @@ public class SimpleConnectionContext implements ConnectionContext{
         return transactionManager;
     }
 
+    @Override
+    public void destroy() {
+        transactionManager.rollback();
+    }
+
 
 }

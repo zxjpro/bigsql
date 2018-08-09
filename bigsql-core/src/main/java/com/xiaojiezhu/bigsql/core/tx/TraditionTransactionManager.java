@@ -73,20 +73,6 @@ public class TraditionTransactionManager implements TransactionManager {
     }
 
 
-
-/*    *//**
-     * close the connection
-     * @throws TransactionException throw the last throw exception
-     *//*
-    protected void closeConnection() throws TransactionException {
-        try {
-            this.txConnectionPool.close();
-        } catch (IOException e) {
-            throw new TransactionException("tx pool close error" , e);
-        }
-    }*/
-
-
     @Override
     public Connection getConnection(String datasourceName) throws SQLException {
         return txConnectionPool.getConnection(datasourceName);
