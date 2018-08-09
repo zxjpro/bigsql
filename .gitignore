@@ -8,3 +8,5 @@ logs/*
 doc/.vuepress/dist/
 bigsql-server/conf/schema/*
 bigsql-server/conf/datasource/*
+
+*.class

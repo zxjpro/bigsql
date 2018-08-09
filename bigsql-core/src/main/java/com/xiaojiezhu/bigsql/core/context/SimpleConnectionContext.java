@@ -2,6 +2,7 @@ package com.xiaojiezhu.bigsql.core.context;
 
 import com.xiaojiezhu.bigsql.core.tx.TraditionTransactionManager;
 import com.xiaojiezhu.bigsql.core.tx.TransactionManager;
+import com.xiaojiezhu.bigsql.sharding.DataSourcePool;
 
 /**
  * time 2018/6/28 10:02
@@ -11,9 +12,11 @@ import com.xiaojiezhu.bigsql.core.tx.TransactionManager;
 public class SimpleConnectionContext implements ConnectionContext{
     private String currentDatabase;
     private TransactionManager transactionManager;
+    private DataSourcePool dataSourcePool;
 
-    public SimpleConnectionContext() {
-        this.transactionManager = new TraditionTransactionManager();
+    public SimpleConnectionContext(DataSourcePool dataSourcePool) {
+        this.dataSourcePool = dataSourcePool;
+        this.transactionManager = new TraditionTransactionManager(dataSourcePool);
     }
 
     @Override
@@ -32,7 +35,4 @@ public class SimpleConnectionContext implements ConnectionContext{
     }
 
 
-    public void setTransactionManager(TransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
-    }
 }

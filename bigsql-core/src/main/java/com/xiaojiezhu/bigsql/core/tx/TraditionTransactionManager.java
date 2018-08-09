@@ -1,10 +1,12 @@
 package com.xiaojiezhu.bigsql.core.tx;
 
 import com.xiaojiezhu.bigsql.common.exception.TransactionException;
+import com.xiaojiezhu.bigsql.sharding.DataSourcePool;
 import com.xiaojiezhu.bigsql.util.BeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashSet;
@@ -17,25 +19,36 @@ import java.util.Set;
  */
 public class TraditionTransactionManager implements TransactionManager {
     public final static Logger LOG = LoggerFactory.getLogger(TraditionTransactionManager.class);
+
+    private DataSourcePool dataSourcePool;
+
+    private TxConnectionPool txConnectionPool;
     /**
      * is open transaction
      */
     private boolean open = false;
 
-    private Set<Connection> connections;
+    /**
+     * is auto commit transaction
+     */
+    private boolean autoCommit = true;
 
-    @Override
-    public boolean isOpenTransaction() {
-        return this.open;
+
+
+    public TraditionTransactionManager(DataSourcePool dataSourcePool) {
+        this.dataSourcePool = dataSourcePool;
     }
 
+
+
     @Override
-    public void beginTransaction() throws TransactionException {
+    public void beginTransaction(boolean autoCommit) throws TransactionException {
         if(this.open){
             throw new TransactionException("begin transaction fail ,  transaction is open , you can not open again!");
         }else{
-            this.connections = new LinkedHashSet<>();
+            this.autoCommit = autoCommit;
             this.open = true;
+            this.txConnectionPool = new ReuseTxConnectionPool(dataSourcePool , this.autoCommit);
         }
     }
 
@@ -44,31 +57,8 @@ public class TraditionTransactionManager implements TransactionManager {
         if(!this.open){
             throw new TransactionException("commit transaction fail ,  transaction is not open");
         }else{
-            if(!BeanUtil.isEmpty(connections)){
-                TransactionException ex = null;
-                for (Connection connection : connections) {
-                    try {
-                        connection.commit();
-                    } catch (SQLException e) {
-                        LOG.error("commit connection fail :" + connection , e);
-                        ex = new TransactionException("commit connection fail " , e);
-                    }
-                }
-
-                try {
-                    closeConnection();
-                } catch (TransactionException e) {
-                    ex = e;
-                }
-
-                this.open = false;
-
-                if(ex != null){
-                    throw ex;
-                }
-            }else{
-                this.open = false;
-            }
+            this.txConnectionPool.commitTransaction();
+            this.open = false;
         }
     }
 
@@ -77,57 +67,45 @@ public class TraditionTransactionManager implements TransactionManager {
         if(!this.open){
             throw new TransactionException("rollback transaction fail ,  transaction is not open");
         }else{
-            if(!BeanUtil.isEmpty(connections)){
-
-                TransactionException ex = null;
-
-                for (Connection connection : connections) {
-                    try {
-                        connection.rollback();
-                    } catch (SQLException e) {
-                        LOG.error("rollback connection fail :" + connection , e);
-                        ex = new TransactionException("rollback connection fail " , e);
-                    }
-                }
-
-                try {
-                    closeConnection();
-                } catch (TransactionException e) {
-                    ex = e;
-                }
-
-                this.open = false;
-
-                if(ex != null){
-                    throw ex;
-                }
-            }else{
-                this.open = false;
-            }
+            this.txConnectionPool.rollbackTransaction();
+            this.open = false;
         }
     }
 
-    /**
+
+
+/*    *//**
      * close the connection
      * @throws TransactionException throw the last throw exception
-     */
+     *//*
     protected void closeConnection() throws TransactionException {
-        if(!BeanUtil.isEmpty(connections)){
-            SQLException exception = null;
-
-            for (Connection connection : connections) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    LOG.error("close connection fail : " + connection , e);
-                    exception = e;
-                }
-            }
-
-            if(exception != null){
-                throw new TransactionException("close connection fail " , exception);
-            }
+        try {
+            this.txConnectionPool.close();
+        } catch (IOException e) {
+            throw new TransactionException("tx pool close error" , e);
         }
+    }*/
+
+
+    @Override
+    public Connection getConnection(String datasourceName) throws SQLException {
+        return txConnectionPool.getConnection(datasourceName);
+    }
+
+    @Override
+    public void returnConnection(Connection connection) {
+        txConnectionPool.returnConnection(connection);
+    }
+
+
+    @Override
+    public boolean isOpenTransaction() {
+        return this.open;
+    }
+
+    @Override
+    public boolean isAutoCommit() {
+        return this.autoCommit;
     }
 
 }

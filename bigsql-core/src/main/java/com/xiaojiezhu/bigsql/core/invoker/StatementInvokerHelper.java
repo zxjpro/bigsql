@@ -36,18 +36,18 @@ public class StatementInvokerHelper {
             }else if(statement instanceof DefaultCommandSelectStatement){
                 //select
                 String currentDataBase = connectionContext.getCurrentDataBase();
-                return new CrudStatementInvoker(statement,context, bigsqlGroup,currentDataBase);
+                return new CrudStatementInvoker(statement,context,connectionContext, bigsqlGroup,currentDataBase);
             }else if(statement instanceof InsertStatement){
                 //insert
                 String currentDataBase = connectionContext.getCurrentDataBase();
-                return new CrudStatementInvoker(statement,context,bigsqlGroup,currentDataBase);
+                return new CrudStatementInvoker(statement,context,connectionContext,bigsqlGroup,currentDataBase);
             }else if(statement instanceof DeleteStatement){
                 //delete
                 String currentDataBase = connectionContext.getCurrentDataBase();
-                return new CrudStatementInvoker(statement,context,bigsqlGroup,currentDataBase);
+                return new CrudStatementInvoker(statement,context,connectionContext,bigsqlGroup,currentDataBase);
             }else if(statement instanceof UpdateStatement){
                 String currentDataBase = connectionContext.getCurrentDataBase();
-                return new CrudStatementInvoker(statement,context,bigsqlGroup,currentDataBase);
+                return new CrudStatementInvoker(statement,context,connectionContext,bigsqlGroup,currentDataBase);
             }else if(statement instanceof VariableStatement){
                 return new VariableStatementInvoker(statement,context.getBigsqlConfiguration());
             }else if(statement instanceof ShowComponentStatement){

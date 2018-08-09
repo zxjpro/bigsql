@@ -1,6 +1,7 @@
 package com.xiaojiezhu.bigsql.core.executer;
 
 import com.xiaojiezhu.bigsql.common.SqlConstant;
+import com.xiaojiezhu.bigsql.core.tx.TransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,13 +22,16 @@ public class AtomExecutor implements Runnable{
     private final CountDownLatch cd;
     private final Object lock;
 
+    private final TransactionManager transactionManager;
 
-    public AtomExecutor(List<ExecuteResult> executeResults, Connection connection, String sql, CountDownLatch cd , Object lock) {
+
+    public AtomExecutor(List<ExecuteResult> executeResults, Connection connection, String sql, CountDownLatch cd , Object lock, TransactionManager transactionManager) {
         this.executeResults = executeResults;
         this.connection = connection;
         this.sql = sql;
         this.cd = cd;
         this.lock = lock;
+        this.transactionManager = transactionManager;
     }
 
     @Override
@@ -48,11 +52,12 @@ public class AtomExecutor implements Runnable{
             executeResult.setResult(false);
             executeResult.setE(e);
         } finally {
-            //close();
+            transactionManager.returnConnection(connection);
         }
         synchronized (lock){
             executeResults.add(executeResult);
             cd.countDown();
+            LOG.info("atom execute success : " + Thread.currentThread().getName());
         }
 
     }
