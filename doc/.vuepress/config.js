@@ -8,18 +8,19 @@ module.exports = {
 				'create_logic_database',
 				'create_logic_table',
                 'hash_sharding',
+                'time_sharding',
                 'master_slave',
                 'full_scan_table',
                 'increment_key',
                 'plugin',
 				'keyword',
-                'not_complete',
 			],
 			'/dev/' : [
 				'',
 				'developer',
 				'exception',
-				'tips'
+				'tips',
+                'not_complete'
 			],
 			'/' : [
 				''

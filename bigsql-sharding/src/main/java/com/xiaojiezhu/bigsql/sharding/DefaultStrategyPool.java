@@ -4,12 +4,12 @@ import com.xiaojiezhu.bigsql.common.ClassContext;
 import com.xiaojiezhu.bigsql.common.annotation.EnableStrategy;
 import com.xiaojiezhu.bigsql.sharding.masterslave.SimpleMasterSlaveStrategy;
 import com.xiaojiezhu.bigsql.sharding.sharding.hash.SingleColumnHashShardingStrategy;
+import com.xiaojiezhu.bigsql.sharding.sharding.time.standard.StandardTimeShardingStrategy;
 import com.xiaojiezhu.bigsql.util.BeanUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -82,6 +82,7 @@ public class DefaultStrategyPool implements StrategyPool {
     private void registerDefaultStrategy(){
         this.registerStrategy(SimpleMasterSlaveStrategy.class);
         this.registerStrategy(SingleColumnHashShardingStrategy.class);
+        this.registerStrategy(StandardTimeShardingStrategy.class);
     }
 
 
