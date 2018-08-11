@@ -2,7 +2,6 @@ package com.xiaojiezhu.bigsql.sql.resolve.table;
 
 import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.Statement;
-import com.xiaojiezhu.bigsql.sql.resolve.field.ValueField;
 
 import java.util.List;
 

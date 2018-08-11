@@ -87,7 +87,7 @@ public class DefaultInsertStatement extends InsertStatement {
         columns.add(new SQLIdentifierExpr(columnName));
         List<SQLInsertStatement.ValuesClause> valuesList = sqlStatement.getValuesList();
         if(valuesList.size() != values.size()){
-            throw new SqlParserException("insert sql add column ,the lines not equals add values , " + getSql() + " , addColumn:" + columnName + " addValues : " + values);
+            throw new SqlParserException("insert sql add column ,the lines not equals add value , " + getSql() + " , addColumn:" + columnName + " addValues : " + values);
         }
         for (int i = 0 ; i < valuesList.size() ; i ++) {
             SQLInsertStatement.ValuesClause valuesClause = valuesList.get(i);

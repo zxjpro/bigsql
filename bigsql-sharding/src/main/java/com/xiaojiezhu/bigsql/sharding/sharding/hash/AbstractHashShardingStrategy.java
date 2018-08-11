@@ -1,21 +1,20 @@
 package com.xiaojiezhu.bigsql.sharding.sharding.hash;
 
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
-import com.xiaojiezhu.bigsql.common.exception.ExternalException;
 import com.xiaojiezhu.bigsql.common.exception.RuleParserException;
 import com.xiaojiezhu.bigsql.common.exception.ShardingColumnNotExistException;
 import com.xiaojiezhu.bigsql.sharding.ShardingTable;
 import com.xiaojiezhu.bigsql.sharding.rule.sharding.ShardingRule;
 import com.xiaojiezhu.bigsql.sharding.sharding.AbstractShardingStrategy;
-import com.xiaojiezhu.bigsql.sql.resolve.field.ValueField;
+import com.xiaojiezhu.bigsql.sql.resolve.field.Field;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.CrudStatement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * the abstract of hash sharding strategy , it has single column hash , and multipart column hash
@@ -57,9 +56,9 @@ public abstract class AbstractHashShardingStrategy extends AbstractShardingStrat
 
 
     @Override
-    protected List<ShardingTable> getExecuteShardingTable(List<? extends ValueField> valueFields)throws BigSqlException {
+    protected List<ShardingTable> getExecuteShardingTable(List<? extends Field> fields)throws BigSqlException {
         //splitNo , the number of sharding table  , index from 1,
-        int splitNo = getShardingSplitNo(valueFields);
+        int splitNo = getShardingSplitNo(fields);
         String dataSourceName = choseDataSourceName(splitNo);
         return Collections.singletonList(new ShardingTable(this.shardingTableName + "_" + splitNo, dataSourceName));
     }
@@ -110,11 +109,11 @@ public abstract class AbstractHashShardingStrategy extends AbstractShardingStrat
 
     /**
      * get the split no of the sharding table , index from 1
-     * @param valueFields insert value or condition field
+     * @param fields insert value or condition field
      * @return split no , index from 1
      */
-    protected int getShardingSplitNo(List<? extends ValueField> valueFields){
-        int hashCode = hashShardingValue(valueFields);
+    protected int getShardingSplitNo(List<? extends Field> fields){
+        int hashCode = hashShardingValue(fields);
         int i = hashCode % this.shardingTableNumber;
         int split;
         if(i == 0){
@@ -129,11 +128,11 @@ public abstract class AbstractHashShardingStrategy extends AbstractShardingStrat
 
     /**
      * hash code by sharding value
-     * @param valueFields all of insert field or condition field，you should filter you need column field
+     * @param fields all of insert field or condition field，you should filter you need column field
      * @return hashCode
      * @throws ShardingColumnNotExistException if sharding column not exits ,throw this exception
      */
-    protected abstract int hashShardingValue(List<? extends ValueField> valueFields)throws ShardingColumnNotExistException;
+    protected abstract int hashShardingValue(List<? extends Field> fields)throws ShardingColumnNotExistException;
 
 
 }

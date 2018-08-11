@@ -1,6 +1,7 @@
 package com.xiaojiezhu.bigsql.util;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,4 +35,11 @@ public class TypeUtil {
         }
     }
 
+    public static boolean isDate(Object value) {
+        if(value == null){
+            return false;
+        }else{
+            return value instanceof Date;
+        }
+    }
 }

@@ -8,19 +8,11 @@ import com.xiaojiezhu.bigsql.sharding.sharding.time.standard.StandardRange;
 import com.xiaojiezhu.bigsql.sql.resolve.SqlResolveUtil;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
 import com.xiaojiezhu.bigsql.util.DateUtils;
-import com.xiaojiezhu.bigsql.util.ScanClassUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.List;
 
 /**
  * @author xiaojie.zhu

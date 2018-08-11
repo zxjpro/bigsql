@@ -69,7 +69,7 @@ public class ConcurrentTest {
                     System.out.println(val);
 
                     long start = System.currentTimeMillis();
-//                    String sql = "insert into person(name,age,sex,tel,create_time) values(?,"+j+",?,?,now())";
+//                    String sql = "insert into person(name,age,sex,tel,create_time) value(?,"+j+",?,?,now())";
 
                     try {
 

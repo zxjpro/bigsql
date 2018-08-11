@@ -5,6 +5,7 @@ import com.xiaojiezhu.bigsql.common.exception.ShardingColumnNotExistException;
 import com.xiaojiezhu.bigsql.sharding.ShardingTable;
 import com.xiaojiezhu.bigsql.sharding.SqlUtil;
 import com.xiaojiezhu.bigsql.sharding.rule.sharding.ShardingRule;
+import com.xiaojiezhu.bigsql.sql.resolve.field.Field;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ValueField;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.CrudStatement;
 
@@ -21,7 +22,7 @@ public abstract class AbstractSingleColumnShardingStrategy extends AbstractShard
     }
 
     @Override
-    protected List<ShardingTable> getExecuteShardingTable(List<? extends ValueField> valueFields) throws BigSqlException {
+    protected List<ShardingTable> getExecuteShardingTable(List<? extends Field> fields) throws BigSqlException {
         if(shardingColumnNames == null || shardingColumnNames.size() == 0){
             throw new ShardingColumnNotExistException("sharding column not exists , table : " + shardingTableName);
         }
@@ -29,29 +30,29 @@ public abstract class AbstractSingleColumnShardingStrategy extends AbstractShard
             throw new BigSqlException(100,"sharding column must be single sharding column");
         }
 
-        ValueField valueField = null;
+        Field field = null;
         String shardingColumnName = this.shardingColumnNames.get(0);
-        for (ValueField tmp : valueFields) {
+        for (Field tmp : fields) {
             if(shardingColumnName.equals(SqlUtil.realName(tmp.getName()))){
-                valueField = tmp;
+                field = tmp;
                 break;
             }
         }
 
-        if(valueField == null){
+        if(field == null){
             throw new BigSqlException(300,"sharding column name [ " + shardingColumnName+ " ] in the sql not found : " + crudStatement.getSql());
         }
 
-        return this.getExecuteShardingTable(valueField);
+        return this.getExecuteShardingTable(field);
     }
 
 
     /**
      * get shardingTable by single value filed
-     * @param valueField
+     * @param field condition or insert
      * @return
      */
-    protected abstract List<ShardingTable> getExecuteShardingTable(ValueField valueField);
+    protected abstract List<ShardingTable> getExecuteShardingTable(Field field);
 
 
 }

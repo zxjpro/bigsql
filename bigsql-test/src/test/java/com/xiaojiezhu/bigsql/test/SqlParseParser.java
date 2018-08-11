@@ -96,7 +96,7 @@ public class SqlParseParser {
 
     @Test
     public void test6(){
-        String sql = "insert into user(id,name,age)values(21,'a1',121)";
+        String sql = "insert into user(id,name,age)value(21,'a1',121)";
 
         SQLInsertStatement sqlStatement = (SQLInsertStatement) SQLUtils.parseStatements(sql, JdbcConstants.MYSQL).get(0);
         SQLName tableName = sqlStatement.getTableName();
@@ -123,7 +123,7 @@ public class SqlParseParser {
 
     @Test
     public void test7(){
-        String sql = "insert into user(id,name,age)values(21,'a1',121)";
+        String sql = "insert into user(id,name,age)value(21,'a1',121)";
         MySqlInsertStatement sqlStatement = (MySqlInsertStatement) SQLUtils.parseStatements(sql, JdbcConstants.MYSQL).get(0);
 
         StringBuilder sb = new StringBuilder();

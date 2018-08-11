@@ -77,11 +77,11 @@ SELECT * FROM table_b b inner join table_a on a.id=b.id
 insert语句中，必须写明要插入哪些字段，如下
 
 ```sql
-INSERT INTO tableName(id,name,age)values(1,'name',20);
+INSERT INTO tableName(id,name,age)value(1,'name',20);
 ```
 
 而不能写成
 
 ```sql
-INSERT INTO tableName values(1,'name',20);
+INSERT INTO tableName value(1,'name',20);
 ```

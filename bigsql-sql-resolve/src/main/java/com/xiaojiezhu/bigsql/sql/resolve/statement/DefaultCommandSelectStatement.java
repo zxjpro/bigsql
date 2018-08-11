@@ -8,10 +8,7 @@ import com.xiaojiezhu.bigsql.common.SqlConstant;
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.sql.resolve.CrudType;
 import com.xiaojiezhu.bigsql.sql.resolve.SqlResolveUtil;
-import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
-import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
-import com.xiaojiezhu.bigsql.sql.resolve.field.SimpleField;
-import com.xiaojiezhu.bigsql.sql.resolve.field.SortField;
+import com.xiaojiezhu.bigsql.sql.resolve.field.*;
 import com.xiaojiezhu.bigsql.sql.resolve.table.ConditionStatement;
 import com.xiaojiezhu.bigsql.util.BeanUtil;
 

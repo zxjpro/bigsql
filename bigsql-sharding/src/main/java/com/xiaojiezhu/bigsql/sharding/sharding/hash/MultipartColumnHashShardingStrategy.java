@@ -3,6 +3,7 @@ package com.xiaojiezhu.bigsql.sharding.sharding.hash;
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.common.exception.ShardingColumnNotExistException;
 import com.xiaojiezhu.bigsql.sharding.rule.sharding.ShardingRule;
+import com.xiaojiezhu.bigsql.sql.resolve.field.Field;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ValueField;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.CrudStatement;
 
@@ -19,7 +20,7 @@ public class MultipartColumnHashShardingStrategy extends AbstractHashShardingStr
     }
 
     @Override
-    protected int hashShardingValue(List<? extends ValueField> valueFields) throws ShardingColumnNotExistException {
+    protected int hashShardingValue(List<? extends Field> fields) throws ShardingColumnNotExistException {
         throw new BigSqlException("not complete code");
     }
 }

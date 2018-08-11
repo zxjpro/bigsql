@@ -4,7 +4,7 @@
     <properties>
 
 
-        <!-- config a key values -->
+        <!-- config a key value -->
         <!-- config sharding dataSource list -->
         <property>
             <key>dataSource</key>

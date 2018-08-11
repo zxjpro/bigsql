@@ -110,6 +110,10 @@ public class StandardRange {
         }
     }
 
+    public String getRangeFormat() {
+        return rangeFormat;
+    }
+
     public String getDataSourceName() {
         return dataSourceName;
     }

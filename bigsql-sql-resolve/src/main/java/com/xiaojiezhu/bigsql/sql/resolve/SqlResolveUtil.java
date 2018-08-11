@@ -1,23 +1,19 @@
 package com.xiaojiezhu.bigsql.sql.resolve;
 
-import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat;
-import com.alibaba.druid.util.JdbcConstants;
 import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
+import com.xiaojiezhu.bigsql.sql.resolve.field.Expression;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ValueField;
 import com.xiaojiezhu.bigsql.sql.resolve.table.SimpleTableName;
 import com.xiaojiezhu.bigsql.sql.resolve.table.TableName;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author xiaojie.zhu
@@ -56,7 +52,9 @@ public class SqlResolveUtil {
         List<TableStat.Condition> conditions = visitor.getConditions();
         List<ConditionField> valueFields = new ArrayList<>(conditions.size());
         for (TableStat.Condition condition : conditions) {
-            valueFields.add(new ConditionField(condition.getColumn().getName(),condition.getValues(),condition.getOperator()));
+            List<Expression> expressions = Collections.singletonList(new Expression(condition.getOperator(),condition.getValues()));
+            ConditionField vf = new ConditionField(condition.getColumn().getName(),expressions);
+            valueFields.add(vf);
         }
         return valueFields;
     }
