@@ -24,7 +24,7 @@ public abstract class AbstractSingleColumnShardingStrategy extends AbstractShard
     @Override
     protected List<ShardingTable> getExecuteShardingTable(List<? extends Field> fields) throws BigSqlException {
         if(shardingColumnNames == null || shardingColumnNames.size() == 0){
-            throw new ShardingColumnNotExistException("sharding column not exists , table : " + shardingTableName);
+            throw new ShardingColumnNotExistException("sharding column not exists , table : " + this.logicTableName);
         }
         if(shardingColumnNames.size() > 1){
             throw new BigSqlException(100,"sharding column must be single sharding column");

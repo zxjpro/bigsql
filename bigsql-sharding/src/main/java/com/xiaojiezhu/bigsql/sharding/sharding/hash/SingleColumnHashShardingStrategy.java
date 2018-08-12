@@ -29,7 +29,7 @@ public class SingleColumnHashShardingStrategy extends AbstractHashShardingStrate
     @Override
     protected int hashShardingValue(List<? extends Field> fields) throws ShardingColumnNotExistException {
         if(shardingColumnNames == null || shardingColumnNames.size() == 0){
-            throw new ShardingColumnNotExistException("sharding column not exists , table : " + shardingTableName);
+            throw new ShardingColumnNotExistException("sharding column not exists , table : " + this.logicTableName);
         }
         if(shardingColumnNames.size() > 1){
             throw new BigSqlException(100,"sharding column must be single sharding column");

@@ -85,3 +85,8 @@ INSERT INTO tableName(id,name,age)value(1,'name',20);
 ```sql
 INSERT INTO tableName value(1,'name',20);
 ```
+
+
+## 对分片键建立索引
+
+对bigsql的分片键，在对应的每个mysql实例中的每个分表，都建议建立相应的索引，这会提高在每个分表的查询速度。

@@ -60,7 +60,7 @@ public abstract class AbstractHashShardingStrategy extends AbstractShardingStrat
         //splitNo , the number of sharding table  , index from 1,
         int splitNo = getShardingSplitNo(fields);
         String dataSourceName = choseDataSourceName(splitNo);
-        return Collections.singletonList(new ShardingTable(this.shardingTableName + "_" + splitNo, dataSourceName));
+        return Collections.singletonList(new ShardingTable(this.logicTableName + "_" + splitNo, dataSourceName));
     }
 
 
@@ -78,7 +78,7 @@ public abstract class AbstractHashShardingStrategy extends AbstractShardingStrat
                     index = y - 1;
 
                 }
-                shardingTables.add(new ShardingTable(shardingTableName + "_" + i,dataSourceNameList.get(index)));
+                shardingTables.add(new ShardingTable(this.logicTableName + "_" + i,dataSourceNameList.get(index)));
             }
         }
 

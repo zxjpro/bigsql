@@ -11,6 +11,7 @@ module.exports = {
                 'time_sharding',
                 'master_slave',
                 'full_scan_table',
+				'transaction',
                 'increment_key',
                 'plugin',
 				'keyword',

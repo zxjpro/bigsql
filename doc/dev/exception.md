@@ -48,7 +48,7 @@
 |305|操作事务异常|``com.xiaojiezhu.bigsql.common.exception.TransactionException``|
 
 
-### 4 开头的错误码，是外部应用的错误吗，如连不第物理数据库
+### 4 开头的错误码，是外部应用的错误吗，比如连不上物理数据库
 
 |错误码|说明|异常类|
 |-|-|-|

@@ -36,7 +36,7 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
     /**
      * the logic table name
      */
-    protected String shardingTableName;
+    protected String logicTableName;
     protected final ShardingRule shardingRule;
 
     /**
@@ -66,8 +66,8 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
             throw new SqlParserException("sql parser fail , it is not crud sql : " + crudStatement.getSql());
         }else{
             TableName tableName = crudStatement.getTables().get(0);
-            shardingTableName = tableName.getTableName();
-            shardingTableName = SqlUtil.realName(shardingTableName);
+            this.logicTableName = tableName.getTableName();
+            this.logicTableName = SqlUtil.realName(this.logicTableName);
         }
 
         init();
@@ -124,7 +124,7 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
                     throw new BigSqlException(300 , "execute shardingTable on insert must be 1 sharding table");
                 }
                 ShardingTable shardingTable = executeShardingTables.get(0);
-                sql = SqlUtil.updateTableName(sql,this.shardingTableName,shardingTable.getTableName());
+                sql = SqlUtil.updateTableName(sql,this.logicTableName , shardingTable.getTableName());
                 executeBlocks.add(new ExecuteBlock(shardingTable.getDataSourceName(),sql));
             }
             return executeBlocks;
@@ -154,7 +154,7 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
 
     private void genExecuteBlocks(List<ExecuteBlock> executeBlocks, String sql, List<ShardingTable> shardingTables) {
         for (ShardingTable shardingTable : shardingTables) {
-            String shardingSql = SqlUtil.updateTableName(sql, this.shardingTableName, shardingTable.getTableName());
+            String shardingSql = SqlUtil.updateTableName(sql, this.logicTableName , shardingTable.getTableName());
             executeBlocks.add(new ExecuteBlock(shardingTable.getDataSourceName(), shardingSql));
         }
     }
