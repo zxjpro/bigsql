@@ -27,7 +27,7 @@ public class TransactionInvoker extends StatementInvoker {
         TransactionManager transactionManager = connectionContext.getTransactionManager();
         if(SqlConstant.OPEN_TRANSACTION.equalsIgnoreCase(statement.getSql())){
             // begin transaction
-            transactionManager.beginTransaction();
+            transactionManager.beginTransaction(false);
         }else if(SqlConstant.COMMIT_TRANSACTION.equalsIgnoreCase(statement.getSql())){
             //commit transaction
             transactionManager.commit();

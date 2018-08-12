@@ -1,5 +1,6 @@
 package com.xiaojiezhu.bigsql.core.executer;
 
+import com.xiaojiezhu.bigsql.core.tx.TransactionManager;
 import com.xiaojiezhu.bigsql.sharding.DataSourcePool;
 import io.netty.channel.EventLoopGroup;
 
@@ -13,12 +14,12 @@ import java.util.List;
 public class QueryExecutor extends AbstractExecutor<List<ResultSet>> {
 
     /**
-     * @param dataSourcePool
+     * @param transactionManager
      * @param group
      * @param concurrent     the concurrent execute number
      */
-    public QueryExecutor(DataSourcePool dataSourcePool, EventLoopGroup group, int concurrent) {
-        super(dataSourcePool, group, concurrent);
+    public QueryExecutor(TransactionManager transactionManager, EventLoopGroup group, int concurrent) {
+        super(transactionManager, group, concurrent);
     }
 
     @Override

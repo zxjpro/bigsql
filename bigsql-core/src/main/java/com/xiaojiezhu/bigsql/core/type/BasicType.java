@@ -5,7 +5,7 @@ package com.xiaojiezhu.bigsql.core.type;
  *
  * @author xiaojie.zhu <br>
  */
-public class BasicType<T> implements Type<T> {
+public class BasicType<T extends Comparable> implements Type<T> {
 
     protected T value;
 
@@ -25,5 +25,11 @@ public class BasicType<T> implements Type<T> {
     @Override
     public T getValue() {
         return this.value;
+    }
+
+
+    @Override
+    public int compareTo(Type o) {
+        return value.compareTo(o.getValue());
     }
 }

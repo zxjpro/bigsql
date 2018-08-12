@@ -2,6 +2,7 @@ package com.xiaojiezhu.bigsql.core.executer;
 
 import com.xiaojiezhu.bigsql.common.FixRunner;
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
+import com.xiaojiezhu.bigsql.core.tx.TransactionManager;
 import com.xiaojiezhu.bigsql.sharding.DataSourcePool;
 import com.xiaojiezhu.bigsql.sharding.ExecuteBlock;
 import com.xiaojiezhu.bigsql.util.IOUtil;
@@ -20,24 +21,25 @@ import java.util.concurrent.CountDownLatch;
  * @author xiaojie.zhu
  */
 public abstract class AbstractExecutor<T> implements Executor<T> {
-    protected final DataSourcePool dataSourcePool;
+    public final static Logger LOG = LoggerFactory.getLogger(AbstractExecutor.class);
+
+    protected final TransactionManager transactionManager;
     protected final EventLoopGroup group;
     protected int concurrent;
     private boolean execute = false;
     private List<ExecuteResult> executeResults;
-    private List<Connection> connections;
 
 
 
     /**
      *
-     * @param dataSourcePool
+     * @param transactionManager
      * @param group
      * @param concurrent the concurrent execute number
      */
-    public AbstractExecutor(DataSourcePool dataSourcePool, EventLoopGroup group,int concurrent) {
+    public AbstractExecutor(TransactionManager transactionManager, EventLoopGroup group,int concurrent) {
 
-        this.dataSourcePool = dataSourcePool;
+        this.transactionManager = transactionManager;
         this.group = group;
         this.concurrent = concurrent;
     }
@@ -50,20 +52,18 @@ public abstract class AbstractExecutor<T> implements Executor<T> {
         this.execute = true;
         this.executeResults = new ArrayList<>(executeBlocks.size());
         CountDownLatch cd = new CountDownLatch(executeBlocks.size());
-        this.connections = new ArrayList<>(executeBlocks.size());
 
         FixRunner fixRunner = new FixRunner(this.concurrent,group);
         Object lock = new Object();
         for (ExecuteBlock executeBlock : executeBlocks) {
             Connection connection = null;
             try {
-                connection = dataSourcePool.getDataSource(executeBlock.getDataSourceName()).getConnection();
-                this.connections.add(connection);
+                connection = transactionManager.getConnection(executeBlock.getDataSourceName());
             } catch (SQLException e) {
                 throw new BigSqlException(400,"can not create connection , dataSourceName : " + executeBlock.getDataSourceName());
             }
 
-            AtomExecutor executor = new AtomExecutor(executeResults,connection,executeBlock.getSql() , cd , lock);
+            AtomExecutor executor = new AtomExecutor(executeResults,connection,executeBlock.getSql() , cd , lock,transactionManager);
             fixRunner.run(executor);
         }
         cd.await();
@@ -83,21 +83,6 @@ public abstract class AbstractExecutor<T> implements Executor<T> {
 
         return getResult0(executeResults);
     }
-
-
-    @Override
-    public void close() throws IOException {
-        if(!execute){
-            throw new BigSqlException(300,"not invoke execute() method");
-        }
-        if(this.connections != null && this.connections.size() > 0){
-            for (Connection connection : this.connections) {
-                IOUtil.close(connection);
-            }
-        }
-    }
-
-
 
 
     protected abstract T getResult0(List<ExecuteResult> executeResults);

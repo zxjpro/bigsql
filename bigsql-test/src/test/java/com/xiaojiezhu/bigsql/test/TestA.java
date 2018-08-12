@@ -4,21 +4,15 @@ import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.util.JdbcConstants;
 import com.xiaojiezhu.bigsql.sharding.rule.masterslave.DefaultMasterSlaveRule;
+import com.xiaojiezhu.bigsql.sharding.sharding.time.standard.StandardRange;
 import com.xiaojiezhu.bigsql.sql.resolve.SqlResolveUtil;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
-import com.xiaojiezhu.bigsql.util.ScanClassUtil;
+import com.xiaojiezhu.bigsql.util.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.JarURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
-import java.util.*;
-import java.util.jar.JarEntry;
-import java.util.jar.JarFile;
+import java.util.List;
 
 /**
  * @author xiaojie.zhu
@@ -42,11 +36,26 @@ public class TestA {
     }
 
 
+
+
     @Test
-    public void test3() throws IOException, ClassNotFoundException {
-        Set<Class<?>> jarClass = new HashSet<>();
-        ScanClassUtil.findJarClass("",new File("E:\\code\\work_space\\css\\css-common\\target\\css-common-0.01.jar"),jarClass);
-        System.out.println(jarClass);
+    public void test3(){
+        String s = "[20170101-20180101]=dataSource1";
+
+
+        StandardRange range = new StandardRange(s,"YEAR");
+
+        String dataSourceName = range.getDataSourceName();
+
+        Assert.assertEquals("dataSource1",dataSourceName);
+
+        Assert.assertTrue(range.isRange(DateUtils.parse("2017-01-01","yyyy-MM-dd")));
+
+        Assert.assertFalse(range.isRange(DateUtils.parse("2018-01-01","yyyy-MM-dd")));
+
+        Assert.assertTrue(range.isRange(DateUtils.parse("2017-12-31 23:59:59","yyyy-MM-dd HH:mm:ss")));
+
+
     }
 
 

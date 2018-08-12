@@ -1,6 +1,9 @@
 package com.xiaojiezhu.bigsql.core.configuration.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.pool.DruidPooledConnection;
+
+import java.sql.SQLException;
 
 /**
  * data source
@@ -16,6 +19,12 @@ public class BigsqlDataSource extends DruidDataSource {
     public BigsqlDataSource(boolean fairLock, String name) {
         super(fairLock);
         this.name = name;
+    }
+
+    @Override
+    public BigsqlConnection getConnection() throws SQLException {
+        DruidPooledConnection connection = super.getConnection();
+        return new BigsqlConnection(connection.getConnectionHolder(),name);
     }
 
     @Override

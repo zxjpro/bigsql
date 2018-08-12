@@ -7,11 +7,11 @@ import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.xiaojiezhu.bigsql.sql.resolve.CrudType;
 import com.xiaojiezhu.bigsql.sql.resolve.SqlResolveUtil;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
+import com.xiaojiezhu.bigsql.sql.resolve.field.ValueField;
 import com.xiaojiezhu.bigsql.sql.resolve.table.ConditionStatement;
 import com.xiaojiezhu.bigsql.sql.resolve.table.SimpleTableName;
 import com.xiaojiezhu.bigsql.sql.resolve.table.TableName;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 

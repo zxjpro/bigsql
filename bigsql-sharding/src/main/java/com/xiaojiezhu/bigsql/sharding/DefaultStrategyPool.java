@@ -2,7 +2,15 @@ package com.xiaojiezhu.bigsql.sharding;
 
 import com.xiaojiezhu.bigsql.common.ClassContext;
 import com.xiaojiezhu.bigsql.common.annotation.EnableStrategy;
+import com.xiaojiezhu.bigsql.sharding.masterslave.SimpleMasterSlaveStrategy;
+import com.xiaojiezhu.bigsql.sharding.sharding.hash.SingleColumnHashShardingStrategy;
+import com.xiaojiezhu.bigsql.sharding.sharding.time.standard.StandardTimeShardingStrategy;
+import com.xiaojiezhu.bigsql.util.BeanUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -11,35 +19,70 @@ import java.util.Set;
  * @author xiaojie.zhu <br>
  */
 public class DefaultStrategyPool implements StrategyPool {
+    public final static Logger LOG = LoggerFactory.getLogger(DefaultStrategyPool.class);
     private ClassContext classContext;
-    private Set<Class<?>> classes;
-
+    /**
+     * bigsql strategy , <strategyName , class>
+     */
+    private Map<String,Class<?>> strategyClasses;
 
     private DefaultStrategyPool(ClassContext classContext) {
         this.classContext = classContext;
+
+        // init bigsql default strategy
+        strategyClasses = new HashMap<>(2);
+
     }
 
     @Override
     public Class<? extends Strategy> getStrategy(String name) {
-        if(this.classes == null){
-            return null;
+        Class<?> strategyClass = strategyClasses.get(name);
+        if(strategyClass == null){
+            throw new NullPointerException("can not found strategy class : " + name);
         }else{
-            for (Class<?> strategy : classes) {
-                if(strategy.getSimpleName().equals(name)){
-                    return (Class<? extends Strategy>) strategy;
-                }
-            }
-            return null;
+            return (Class<? extends Strategy>) strategyClass;
         }
     }
 
+    @Override
+    public void registerStrategy(String name, Class<? extends Strategy> strategyClass) {
+        this.strategyClasses.put(name,strategyClass);
+    }
+
+    /**
+     * register the strategy , the name is class simple name
+     * @param strategyClass class
+     */
+    private void registerStrategy(Class<? extends Strategy> strategyClass){
+        this.registerStrategy(strategyClass.getSimpleName() , strategyClass);
+    }
 
 
     @Override
-    public void reload() throws Exception {
+    public synchronized void reload() throws Exception {
+        LOG.info("reload strategy");
         classContext.reload();
+
+
+        strategyClasses.clear();
+        this.registerDefaultStrategy();
         Set<Class<?>> tmp =  classContext.getByAnnotation(EnableStrategy.class);
-        this.classes = tmp;
+        if(!BeanUtil.isEmpty(tmp)){
+            for (Class<?> strategyClass : tmp) {
+                this.registerStrategy((Class<? extends Strategy>) strategyClass);
+            }
+        }
+        LOG.info("reload strategy success , strategy :" + strategyClasses.keySet());
+    }
+
+
+    /**
+     * register bigsql default strategy
+     */
+    private void registerDefaultStrategy(){
+        this.registerStrategy(SimpleMasterSlaveStrategy.class);
+        this.registerStrategy(SingleColumnHashShardingStrategy.class);
+        this.registerStrategy(StandardTimeShardingStrategy.class);
     }
 
 

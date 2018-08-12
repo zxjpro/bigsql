@@ -1,6 +1,7 @@
 package com.xiaojiezhu.bigsql.server.bootstrap.netty.handler;
 
 import com.xiaojiezhu.bigsql.core.context.BigsqlContext;
+import com.xiaojiezhu.bigsql.core.context.ConnectionContext;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.EventLoopGroup;
@@ -24,6 +25,8 @@ public abstract class AbstractProtocolHandler<I> extends SimpleChannelInboundHan
      */
     private static final AtomicLong CHANNEL_COUNT = new AtomicLong();
 
+    private ClientLeaveHandler clientLeaveHandler = DefaultClientLeaveHandler.getInstance();
+
     public AbstractProtocolHandler(EventLoopGroup bigSqlGroup, BigsqlContext bigsqlContext) {
         this.bigsqlContext = bigsqlContext;
         this.bigSqlGroup = bigSqlGroup;
@@ -45,6 +48,11 @@ public abstract class AbstractProtocolHandler<I> extends SimpleChannelInboundHan
     @Override
     public final void channelInactive(ChannelHandlerContext ctx) throws Exception {
         long channelNumber = CHANNEL_COUNT.decrementAndGet();
+
+        ConnectionContext connectionContext = bigsqlContext.getConnectionContext(ctx.channel());
+        clientLeaveHandler.onLeave(connectionContext);
+
+
         bigsqlContext.removeConnectionContext(ctx.channel());
         LOG.info("a client leave : [" + getRemoteAddress(ctx.channel()) + "] , connection number : " + channelNumber);
         this.channelInactive0(ctx);

@@ -20,6 +20,7 @@ public abstract class DefaultCurdStatement implements CrudStatement {
         this.sql = sql;
         this.sqlStatement = sqlStatement;
         this.visitor = visitor;
+        this.sqlStatement.accept(this.visitor);
     }
 
     @Override

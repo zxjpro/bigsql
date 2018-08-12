@@ -5,6 +5,8 @@ import com.xiaojiezhu.bigsql.common.SqlConstant;
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.common.exception.SqlParserException;
 import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
+import com.xiaojiezhu.bigsql.sql.resolve.field.SimpleField;
+import com.xiaojiezhu.bigsql.sql.resolve.field.SortField;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +68,16 @@ public final class SimpleSelectStatement implements CommandSelectStatement {
             }
         }
         return queryField;
+    }
+
+    @Override
+    public SimpleField getGroupField() {
+        throw new BigSqlException(300 , "can not cal this method");
+    }
+
+    @Override
+    public SortField getOrderField() {
+        throw new BigSqlException(300 , "can not cal this method");
     }
 
     @Override

@@ -2,12 +2,12 @@ package com.xiaojiezhu.bigsql.sql.resolve.statement;
 
 import com.alibaba.druid.sql.ast.SQLName;
 import com.alibaba.druid.sql.ast.SQLStatement;
-import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlDeleteStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlUpdateStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.xiaojiezhu.bigsql.sql.resolve.CrudType;
 import com.xiaojiezhu.bigsql.sql.resolve.SqlResolveUtil;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
+import com.xiaojiezhu.bigsql.sql.resolve.field.ValueField;
 import com.xiaojiezhu.bigsql.sql.resolve.table.ConditionStatement;
 import com.xiaojiezhu.bigsql.sql.resolve.table.SimpleTableName;
 import com.xiaojiezhu.bigsql.sql.resolve.table.TableName;

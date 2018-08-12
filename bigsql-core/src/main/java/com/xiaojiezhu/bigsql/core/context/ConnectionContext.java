@@ -28,4 +28,10 @@ public interface ConnectionContext {
      * @return transaction
      */
     TransactionManager getTransactionManager();
+
+
+    /**
+     * destroy
+     */
+    void destroy();
 }

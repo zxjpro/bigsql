@@ -21,7 +21,7 @@ public class InsertTest {
     @Test
     public void test(){
         String sql = "insert into user(id,name,age)" +
-                "values(1,'abc',23),(11,'1abc',123)";
+                "value(1,'abc',23),(11,'1abc',123)";
 
         InsertStatement statement = (InsertStatement) StatementHelper.parse(CommandType.COM_QUERY, sql);
         statement.addInsertColumn("gen_id",Arrays.asList(IncrementFactory.nextId(),IncrementFactory.nextId()));

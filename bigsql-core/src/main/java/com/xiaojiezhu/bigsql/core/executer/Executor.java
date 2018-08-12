@@ -9,7 +9,7 @@ import java.util.List;
  * sql executor
  * @author xiaojie.zhu
  */
-public interface Executor<T> extends Closeable {
+public interface Executor<T> {
 
     /**
      * must execute this method first,

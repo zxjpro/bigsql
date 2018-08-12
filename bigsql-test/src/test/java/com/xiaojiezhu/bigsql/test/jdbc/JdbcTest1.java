@@ -21,7 +21,7 @@ public class JdbcTest1 {
 
     @Test
     public void insert() throws SQLException {
-        String sql = "insert into user(id,name) values(2,'name2')";
+        String sql = "insert into user(id,name) value(2,'name2')";
 
         Statement statement = connection.createStatement();
     }

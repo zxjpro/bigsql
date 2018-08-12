@@ -8,6 +8,8 @@ import com.xiaojiezhu.bigsql.sharding.SqlUtil;
 import com.xiaojiezhu.bigsql.sharding.rule.Rule;
 import com.xiaojiezhu.bigsql.sharding.rule.sharding.ShardingRule;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
+import com.xiaojiezhu.bigsql.sql.resolve.field.Expression;
+import com.xiaojiezhu.bigsql.sql.resolve.field.Field;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ValueField;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.CrudStatement;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.InsertStatement;
@@ -36,12 +38,12 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
      */
     protected String shardingTableName;
     protected final ShardingRule shardingRule;
-    protected List<String> dataSourceNameList;
+
     /**
      * auto increment column name list
      */
     protected List<String> incrementColumnList;
-    protected int shardingTableNumber;
+
 
     /**
      * the config of the strategy sharding column list
@@ -75,19 +77,6 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
      * init the config properties
      */
     private void init(){
-        //dataSource List
-        Object oDataSourceName = getPropertyValue(DATASOURCE_KEY_NAME , true);
-        String dataSourceNames = oDataSourceName.toString();
-        String[] split = dataSourceNames.split(",");
-        this.dataSourceNameList = Arrays.asList(split);
-
-        //sharding number
-        Object oShardingNumber = getPropertyValue(SHARDING_NUMBER_KEY_NAME,true);
-        try{
-            this.shardingTableNumber = Integer.parseInt(String.valueOf(oShardingNumber));
-        }catch (Exception e){
-            throw new RuleParserException("parse " + SHARDING_NUMBER_KEY_NAME + " fail , not Integer , " + shardingRule);
-        }
 
         //sharding Column Name
         Object oShardingColumnName = getPropertyValue(Rule.SHARDING_COLUMN_NAME_KEY_NAME,true);
@@ -124,13 +113,17 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
             InsertStatement insertStatement = (InsertStatement) crudStatement;
             List<List<ValueField>> insertValues = insertStatement.getInsertValues();
             //check has sharding column
-            checkHasShardingColumn(insertValues.get(0));
+            this.checkInsertHasShardingColumn(insertValues.get(0));
             addIncrementColumn(insertStatement, insertValues);
             List<String> insertSql = insertStatement.getInsertSql();
             List<ExecuteBlock> executeBlocks = new ArrayList<>(insertSql.size());
             for (int i = 0 ; i < insertSql.size() ; i ++) {
                 String sql = insertSql.get(i);
-                ShardingTable shardingTable = getShardingTable(insertValues.get(i));
+                List<ShardingTable> executeShardingTables = getExecuteShardingTable(insertValues.get(i));
+                if(executeShardingTables.size() != 1){
+                    throw new BigSqlException(300 , "execute shardingTable on insert must be 1 sharding table");
+                }
+                ShardingTable shardingTable = executeShardingTables.get(0);
                 sql = SqlUtil.updateTableName(sql,this.shardingTableName,shardingTable.getTableName());
                 executeBlocks.add(new ExecuteBlock(shardingTable.getDataSourceName(),sql));
             }
@@ -141,25 +134,28 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
             ConditionStatement conditionStatement = (ConditionStatement) crudStatement;
             List<ConditionField> conditionFields = conditionStatement.getConditionFields();
             //check has sharding column
-            checkHasShardingColumn(conditionFields);
+            this.checkSelectUpdateDeleteHasShardingColumn(conditionFields);
 
             List<ExecuteBlock> executeBlocks = new ArrayList<>(1);
             String sql = crudStatement.getSql();
             if(this.hasShardingColumn){
                 //find sharding column
-                ShardingTable shardingTable = getShardingTable(conditionFields);
-                String shardingSql = SqlUtil.updateTableName(sql,this.shardingTableName,shardingTable.getTableName());
-                executeBlocks.add(new ExecuteBlock(shardingTable.getDataSourceName(),shardingSql));
+                List<ShardingTable> shardingTables = getExecuteShardingTable(conditionFields);
+                this.genExecuteBlocks(executeBlocks, sql, shardingTables);
             }else{
                 //full scan table
-                List<ShardingTable> shardingTables = getShardingTable();
-                for (ShardingTable shardingTable : shardingTables) {
-                    String shardingSql = SqlUtil.updateTableName(sql,this.shardingTableName,shardingTable.getTableName());
-                    executeBlocks.add(new ExecuteBlock(shardingTable.getDataSourceName(),shardingSql));
-                }
+                List<ShardingTable> shardingTables = getExecuteShardingTable();
+                this.genExecuteBlocks(executeBlocks, sql, shardingTables);
             }
 
             return executeBlocks;
+        }
+    }
+
+    private void genExecuteBlocks(List<ExecuteBlock> executeBlocks, String sql, List<ShardingTable> shardingTables) {
+        for (ShardingTable shardingTable : shardingTables) {
+            String shardingSql = SqlUtil.updateTableName(sql, this.shardingTableName, shardingTable.getTableName());
+            executeBlocks.add(new ExecuteBlock(shardingTable.getDataSourceName(), shardingSql));
         }
     }
 
@@ -186,7 +182,7 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
                     //sql has value , check
                     for (List<ValueField> insertValue : insertValues) {
                         ValueField valueField = insertValue.get(index);
-                        if(BeanUtil.hasEmpty(valueField.getValues())){
+                        if(valueField.getValue() == null){
                             throw new IncrementColumnNullException(incrementColumn + " has value be null");
                         }
                     }
@@ -215,19 +211,42 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
 
 
     /**
-     * check the sql is has sharding column , it not has and not allow full scan table , it will be throw FullScanTableException
+     * check the insert sql is has sharding column , it not has and not allow full scan table , it will be throw FullScanTableException
      * @param valueFields value field
      */
-    private void checkHasShardingColumn(List<? extends ValueField> valueFields){
+    private void checkInsertHasShardingColumn(List<? extends ValueField> valueFields){
         if(valueFields != null && valueFields.size() > 0){
             if(this.shardingColumnNames.size() == 1){
                 for (ValueField valueField : valueFields) {
 
                     if(shardingColumnNames.contains(SqlUtil.realName(valueField.getName()))){
-                        if(valueField.getValues() != null && valueField.getValues().size() > 0){
-                            this.hasShardingColumn = true;
-                            return;
-                        }
+                        this.hasShardingColumn = true;
+                        return;
+                    }
+                }
+            }else{
+                //TODO 暂时只支持一个分片键，这里需要增加多个分片键
+                throw new RuleParserException("not support multipart sharding column");
+            }
+        }
+        this.hasShardingColumn = false;
+        if(!allowFullScan){
+            throw new FullScanTableException(crudStatement.getSql() + " not has shardingColumn ");
+        }
+    }
+
+    /**
+     * check the select,update,delete, sql is has sharding column , it not has and not allow full scan table , it will be throw FullScanTableException
+     * @param conditionFields value field
+     */
+    private void checkSelectUpdateDeleteHasShardingColumn(List<? extends ConditionField> conditionFields){
+        if(conditionFields != null && conditionFields.size() > 0){
+            if(this.shardingColumnNames.size() == 1){
+                for (ConditionField conditionField : conditionFields) {
+
+                    if(shardingColumnNames.contains(SqlUtil.realName(conditionField.getName()))){
+                        this.hasShardingColumn = true;
+                        return;
                     }
                 }
             }else{
@@ -250,7 +269,7 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
      * @param required required
      * @return value , if not exists,will throw RuleParserException
      */
-    private Object getPropertyValue(String key,boolean required){
+    protected final Object getPropertyValue(String key,boolean required){
         Map<String, Object> properties = shardingRule.getProperties();
         Object oValue = properties.get(key);
         if(oValue == null){
@@ -277,10 +296,11 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
 
     /**
      * get the sharding table by value field or conditionValueField
-     * @param valueFields the condition or insert field
+     * @param fields the condition or insert
      * @return jdbc connection
+     * @throws BigSqlException
      */
-    protected abstract ShardingTable getShardingTable(List<? extends ValueField> valueFields)throws BigSqlException;
+    protected abstract List<ShardingTable> getExecuteShardingTable(List<? extends Field> fields)throws BigSqlException;
 
     /**
      * get the all sharding table list<br>
@@ -289,5 +309,5 @@ public abstract class AbstractShardingStrategy implements ShardingStrategy {
      *
      * @return sharding table list
      */
-    protected abstract List<ShardingTable> getShardingTable();
+    protected abstract List<ShardingTable> getExecuteShardingTable();
 }

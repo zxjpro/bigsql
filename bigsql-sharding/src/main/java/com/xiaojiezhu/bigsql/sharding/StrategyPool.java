@@ -15,4 +15,11 @@ public interface StrategyPool extends Reloadable {
      * @return
      */
     Class<? extends Strategy> getStrategy(String name);
+
+    /**
+     * register strategy
+     * @param name strategy name
+     * @param strategyClass class
+     */
+    void registerStrategy(String name,Class<? extends Strategy> strategyClass);
 }

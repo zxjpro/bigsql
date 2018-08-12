@@ -62,7 +62,7 @@ public class SimpleBigsqlContext implements BigsqlContext {
     public ConnectionContext getConnectionContext(Channel channel) {
         ConnectionContext connectionContext = connectionContextMap.get(channel);
         if(connectionContext == null){
-            connectionContext = new SimpleConnectionContext();
+            connectionContext = new SimpleConnectionContext(dataSourcePool);
             connectionContextMap.put(channel,connectionContext);
         }
         return connectionContext;

@@ -4,6 +4,7 @@ import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.common.exception.InvokeStatementException;
 import com.xiaojiezhu.bigsql.core.BigsqlResultSet;
 import com.xiaojiezhu.bigsql.core.context.BigsqlContext;
+import com.xiaojiezhu.bigsql.core.context.ConnectionContext;
 import com.xiaojiezhu.bigsql.core.executer.Executor;
 import com.xiaojiezhu.bigsql.core.executer.QueryExecutor;
 import com.xiaojiezhu.bigsql.core.invoker.result.DefaultSelectInvokeResult;
@@ -11,10 +12,12 @@ import com.xiaojiezhu.bigsql.core.invoker.result.ExecuteInvokeResult;
 import com.xiaojiezhu.bigsql.core.invoker.result.InvokeResult;
 import com.xiaojiezhu.bigsql.core.merge.ItemMerge;
 import com.xiaojiezhu.bigsql.core.merge.Merge;
+import com.xiaojiezhu.bigsql.core.merge.MergeFactory;
 import com.xiaojiezhu.bigsql.core.schema.Schema;
 import com.xiaojiezhu.bigsql.core.schema.database.LogicDatabase;
 import com.xiaojiezhu.bigsql.core.schema.table.LogicTable;
 import com.xiaojiezhu.bigsql.core.schema.table.StrategyTable;
+import com.xiaojiezhu.bigsql.core.tx.TransactionManager;
 import com.xiaojiezhu.bigsql.sharding.ExecuteBlock;
 import com.xiaojiezhu.bigsql.sharding.Strategy;
 import com.xiaojiezhu.bigsql.sharding.masterslave.MasterSlaveStrategy;
@@ -45,10 +48,12 @@ public class CrudStatementInvoker extends StatementInvoker {
     protected final BigsqlContext context;
     protected final String databaseName;
     protected final EventLoopGroup loopGroup;
+    protected final ConnectionContext connectionContext;
 
-    public CrudStatementInvoker(Statement statement, BigsqlContext context, EventLoopGroup loopGroup, String databaseName) {
+    public CrudStatementInvoker(Statement statement, BigsqlContext context,ConnectionContext connectionContext, EventLoopGroup loopGroup, String databaseName) {
         super(statement);
         this.context = context;
+        this.connectionContext = connectionContext;
         this.databaseName = databaseName;
         this.loopGroup = loopGroup;
     }
@@ -85,17 +90,23 @@ public class CrudStatementInvoker extends StatementInvoker {
      * @return
      */
     private InvokeResult invokeTable(StrategyTable table) {
+        // open auto commit transaction
+        TransactionManager transactionManager = connectionContext.getTransactionManager();
+        if(!transactionManager.isOpenTransaction()){
+            transactionManager.beginTransaction(true);
+        }
+
         Strategy strategy = table.getStrategy(statement);
 
         if(strategy instanceof ShardingStrategy){
             //invoke sharding
             InvokeResult invokeResult;
-            Executor<?> executor = new QueryExecutor(context.getDataSourcePool(),loopGroup,context.getBigsqlConfiguration().getExecuteConcurrent());
+            Executor<?> executor = new QueryExecutor(connectionContext.getTransactionManager(),loopGroup,context.getBigsqlConfiguration().getExecuteConcurrent());
 
             try {
                 invokeResult = invokeShardingTable((ShardingStrategy) strategy, executor, table.getName());
             } finally {
-                IOUtil.close(executor);
+                this.commit();
             }
 
             return invokeResult;
@@ -103,18 +114,29 @@ public class CrudStatementInvoker extends StatementInvoker {
         }else if(strategy instanceof MasterSlaveStrategy){
             //invoke master slave
             InvokeResult invokeResult;
-            Executor<?> executor = new QueryExecutor(context.getDataSourcePool(),loopGroup,context.getBigsqlConfiguration().getExecuteConcurrent());
+            Executor<?> executor = new QueryExecutor(connectionContext.getTransactionManager(),loopGroup,context.getBigsqlConfiguration().getExecuteConcurrent());
 
             try {
                 invokeResult = invokeMasterSlaveTable(table, (MasterSlaveStrategy) strategy, executor);
             } finally {
-                IOUtil.close(executor);
+                this.commit();
             }
 
             return invokeResult;
 
         }else{
             throw new BigSqlException(300 , "not support strategy , " + strategy.getClass().getName());
+        }
+    }
+
+
+    /**
+     * auto commit connection
+     */
+    private void commit() {
+        TransactionManager transactionManager = connectionContext.getTransactionManager();
+        if(transactionManager.isAutoCommit()){
+            transactionManager.commit();
         }
     }
 
@@ -142,7 +164,7 @@ public class CrudStatementInvoker extends StatementInvoker {
     private InvokeResult invokeShardingTable(ShardingStrategy shardingStrategy,Executor<?> executor,String tableName){
         List<ExecuteBlock> executeBlockList = shardingStrategy.getExecuteBlockList();
         Asserts.collectionIsNotNull(executeBlockList,"execute block list can not be null");
-        LOG.debug("sharding sql list : " + executeBlockList);
+        //LOG.debug("sharding sql list : " + executeBlockList);
 
         return executeResult(executor, tableName, executeBlockList);
     }
@@ -158,7 +180,8 @@ public class CrudStatementInvoker extends StatementInvoker {
     private InvokeResult executeResult(Executor<?> executor, String tableName, List<ExecuteBlock> executeBlockList) {
         if(CrudType.SELECT.equals(((CrudStatement) statement).getCrudType())){
             List<ResultSet> executeResult = getExecuteResult(executor,executeBlockList);
-            Merge merge = new ItemMerge(databaseName,tableName,executeResult);
+
+            Merge merge = MergeFactory.getMerge(databaseName, tableName, (DefaultCommandSelectStatement) statement, executeResult);
             ResultSet resultSet = merge.merge();
             return DefaultSelectInvokeResult.createInstance(resultSet);
         }else{

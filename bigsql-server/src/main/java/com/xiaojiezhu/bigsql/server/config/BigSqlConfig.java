@@ -9,7 +9,7 @@ public class BigSqlConfig {
     private int port = 3307;
     private int bossThread = 1;
     private int workerThread = Runtime.getRuntime().availableProcessors() * 2;
-    private int bigSqlThread = 64;
+    private int bigSqlThread = 512;
     private int executeConcurrent = 5;
 
     //TODO : 这里的参数还没有设置到System.setProperties()
