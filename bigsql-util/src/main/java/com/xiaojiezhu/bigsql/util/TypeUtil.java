@@ -1,5 +1,8 @@
 package com.xiaojiezhu.bigsql.util;
 
+import com.sun.org.apache.bcel.internal.generic.RET;
+
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -11,6 +14,8 @@ import java.util.List;
  */
 public class TypeUtil {
     private static final List<Class<?>> NUMBER_TYPES = Arrays.asList(Integer.class,int.class,Double.class,double.class,Float.class,float.class,Short.class,short.class,Long.class,long.class,Long.class);
+    public static final String YMD = "([\\d]{4}?)-([\\d]+?)-([\\d]+?)";
+    public static final String YMDHMS = "([\\d]{4}?)-([\\d]+?)-([\\d]+?) ([\\d]+?):([\\d]+?):([\\d]+)";
 
     public static boolean isNumber(Object obj){
         Class<?> aClass = obj.getClass();
@@ -40,6 +45,21 @@ public class TypeUtil {
             return false;
         }else{
             return value instanceof Date;
+        }
+    }
+
+    /**
+     * parse any str to date
+     * @param str
+     * @return
+     */
+    public static Date parseDate(String str) throws ParseException {
+        if(str.matches(YMD)){
+            return DateUtils.parse(str , "yyyy-MM-dd");
+        }else if(str.matches(YMDHMS)){
+            return DateUtils.parse(str ,"yyyy-MM-dd HH:mm:ss");
+        }else{
+            throw new ParseException(str + " can not parse java.util.Date",0);
         }
     }
 }

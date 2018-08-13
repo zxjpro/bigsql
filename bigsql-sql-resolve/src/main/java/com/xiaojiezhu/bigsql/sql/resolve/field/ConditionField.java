@@ -1,5 +1,6 @@
 package com.xiaojiezhu.bigsql.sql.resolve.field;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -11,16 +12,12 @@ import java.util.List;
  */
 public class ConditionField extends SimpleField {
 
-    protected List<Expression> values;
+    protected List<Expression> values = new LinkedList<>();
 
     public ConditionField(String name) {
         super(name);
     }
 
-    public ConditionField(String name, List<Expression> values) {
-        super(name);
-        this.values = values;
-    }
 
     public List<Expression> getValues() {
         return values;
@@ -28,6 +25,15 @@ public class ConditionField extends SimpleField {
 
     public void setValues(List<Expression> values) {
         this.values = values;
+    }
+
+
+    public void addExpression(Expression expression){
+        values.add(expression);
+    }
+
+    public void addExpression(List<Expression> expressions){
+        values.addAll(expressions);
     }
 
 

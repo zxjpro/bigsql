@@ -13,13 +13,6 @@ public class CreateInstanceTest {
 
     @Test
     public void test(){
-        Class<SingleColumnHashShardingStrategy> aClass = SingleColumnHashShardingStrategy.class;
 
-        Constructor<?>[] constructors = aClass.getConstructors();
-        Constructor<?> constructor = constructors[0];
-
-        Class<?>[] parameterTypes = constructor.getParameterTypes();
-
-        Assert.assertEquals(3, parameterTypes.length);
     }
 }

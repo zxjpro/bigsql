@@ -27,12 +27,4 @@ public class StatementHelperTest {
         Assert.assertTrue(queryField.size() > 0);
     }
 
-    @Test
-    public void test2() throws SqlParserException {
-        String sql = "select now(63)";
-        SimpleSelectStatement statement = (SimpleSelectStatement) StatementHelper.parse(CommandType.COM_QUERY,sql);
-        List<AliasField> queryField = statement.getQueryField();
-        System.out.println(queryField);
-        Assert.assertTrue(queryField.size() > 0);
-    }
 }

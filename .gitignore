@@ -6,7 +6,7 @@ bigsql-server/logs/*
 logs/*
 *target/
 doc/.vuepress/dist/
-bigsql-server/conf/schema/*
-bigsql-server/conf/datasource/*
+bigsql-server/conf/schema/*/*.xml
+bigsql-server/conf/datasource/*.properties
 
 *.class

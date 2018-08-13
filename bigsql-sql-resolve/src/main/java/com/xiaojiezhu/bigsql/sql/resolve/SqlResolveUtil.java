@@ -6,6 +6,7 @@ import com.alibaba.druid.sql.ast.statement.SQLSelectItem;
 import com.alibaba.druid.sql.ast.statement.SQLSelectStatement;
 import com.alibaba.druid.sql.dialect.mysql.visitor.MySqlSchemaStatVisitor;
 import com.alibaba.druid.stat.TableStat;
+import com.xiaojiezhu.bigsql.common.SqlConstant;
 import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
 import com.xiaojiezhu.bigsql.sql.resolve.field.Expression;
@@ -52,11 +53,41 @@ public class SqlResolveUtil {
         List<TableStat.Condition> conditions = visitor.getConditions();
         List<ConditionField> valueFields = new ArrayList<>(conditions.size());
         for (TableStat.Condition condition : conditions) {
-            List<Expression> expressions = Collections.singletonList(new Expression(condition.getOperator(),condition.getValues()));
-            ConditionField vf = new ConditionField(condition.getColumn().getName(),expressions);
-            valueFields.add(vf);
+
+            ConditionField conditionField = findConditionField(valueFields, condition.getColumn().getName());
+            if(conditionField == null){
+                conditionField = new ConditionField(condition.getColumn().getName());
+                valueFields.add(conditionField);
+            }
+
+            if(condition.getOperator().equals(SqlConstant.BETWEEN)){
+                //BETWEEN AND
+                System.out.println(1);
+                List<Object> values = condition.getValues();
+                conditionField.addExpression(new Expression(SqlConstant.GREAT_EQUALS , values.get(0)));
+                conditionField.addExpression(new Expression(SqlConstant.LESS_EQUALS , values.get(1)));
+
+            }else{
+                Expression expression = new Expression(condition.getOperator(), condition.getValues().get(0));
+                conditionField.addExpression(expression);
+            }
+
+
+
         }
         return valueFields;
+    }
+
+    private static ConditionField findConditionField(List<ConditionField> conditionFields , String columnName){
+        if(conditionFields != null){
+            for (ConditionField conditionField : conditionFields) {
+                if(conditionField.getName().equals(columnName)){
+                    return conditionField;
+                }
+            }
+        }
+
+        return null;
     }
 
 

@@ -1,5 +1,6 @@
 package com.xiaojiezhu.bigsql.sharding.sharding.time.standard;
 
+import com.xiaojiezhu.bigsql.common.SqlConstant;
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.common.exception.NotSupportException;
 import com.xiaojiezhu.bigsql.sharding.ShardingTable;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class StandardTimeShardingStrategy extends AbstractSingleColumnShardingStrategy {
     public static final String RANGE = "range";
     public static final String SHARDING_FORMAT = "shardingFormat";
+    public static final int MAX_QUERY_SHARDING_SIZE = 12;
 
     private StandardRangePool standardRangePool;
 
@@ -78,6 +80,9 @@ public class StandardTimeShardingStrategy extends AbstractSingleColumnShardingSt
      */
     protected List<ShardingTable> findShardingTable(ValueField valueField){
         Object value = valueField.getValue();
+        if(SqlConstant.NOW.equalsIgnoreCase(String.valueOf(value))){
+            value = new Date();
+        }
         if(!TypeUtil.isDate(value)){
             throw new BigSqlException(300 , "standard time sharding value must be date");
         }else{
@@ -99,6 +104,9 @@ public class StandardTimeShardingStrategy extends AbstractSingleColumnShardingSt
      */
     protected List<ShardingTable> findShardingTable(ConditionField conditionField){
         List<ShardingTable> shardingTables = this.standardRangePool.getShardingTables(conditionField.getValues());
+        if(shardingTables.size() > MAX_QUERY_SHARDING_SIZE){
+            throw new BigSqlException(300 , "time sharding must not query more than " + MAX_QUERY_SHARDING_SIZE + " sharding table size , this is : " + shardingTables.size());
+        }
         return shardingTables;
     }
 

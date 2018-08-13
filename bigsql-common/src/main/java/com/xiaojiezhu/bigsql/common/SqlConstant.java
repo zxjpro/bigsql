@@ -12,6 +12,7 @@ public class SqlConstant {
     public static final String LIKE = "LIKE";
     public static final String SHOW = "SHOW";
     public static final String OR = "OR";
+    public static final String BETWEEN = "BETWEEN";
     public static final String SHOW_DATABASES = "SHOW DATABASES";
     public static final String SHOW_VARIABLES = "SHOW VARIABLES";
     public static final String SHOW_TABLES = "SHOW TABLES";
@@ -41,11 +42,18 @@ public class SqlConstant {
 
     public static final String DESC = "DESC";
 
+    public static final String GREAT = ">";
+    public static final String GREAT_EQUALS = ">=";
+    public static final String LESS = "<";
+    public static final String LESS_EQUALS = "<=";
+
 
 
 
 
     public static final List<String> MYSQL_DATABASE = new ArrayList<>();
+    public static final String NOW = "NOW()";
+
     static {
         MYSQL_DATABASE.add("information_schema");
         MYSQL_DATABASE.add("mysql");

@@ -5,10 +5,7 @@ package com.xiaojiezhu.bigsql.sql.resolve.field;
  * @author zxj
  */
 public class Expression{
-    public static final String GREAT = ">";
-    public static final String GREAT_EQUALS = ">=";
-    public static final String LESS = "<";
-    public static final String LESS_EQUALS = "<=";
+
     /**
      * > , >= , < , <=
      */

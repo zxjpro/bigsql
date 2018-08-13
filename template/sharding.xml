@@ -1,0 +1,45 @@
+<rule>
+    <!-- the strategy name -->
+    <strategy>StandardTimeShardingStrategy</strategy> <!-- standard time sharding -->
+    <properties>
+
+
+        <!-- sharding by time format -->
+        <property>
+            <key>shardingFormat</key>
+
+            <!-- YEAR,MONTH,DAY   -->
+            <value>MONTH</value>
+        </property>
+
+
+        <!-- config the sharding column name -->
+        <property>
+            <key>shardingColumn</key>
+            <value>create_time</value>
+        </property>
+
+
+
+        <!-- config the time range in dataSource ...start  -->
+
+
+        <!--[yyyyMMdd-yyyyMMdd]=dataSourceName -->
+        <!-- start <= shardingTime < end -->
+        <!-- the date range,will be save dataSource1 -->
+        <!-- we can config multipart range by ; -->
+        <!-- the multipart range is must order by date asc , bigsql get the first match dataSource-->
+        <property>
+            <key>range</key>
+            <value> [20170101-20180101]=dataSource1   ;   [20180101-20180501]=dataSource2   ;   [20180301-?]=dataSource3 </value>
+        </property>
+
+
+        <!--[yyyyMMdd-?]=dataSourceName -->
+        <!-- ? is the future time  -->
+
+
+        <!-- config the time range in dataSource ...end  -->
+
+    </properties>
+</rule>

@@ -115,7 +115,8 @@ class FileConfigDataSourceLoader implements DataSourceLoader {
             Properties properties = new Properties();
             properties.load(inputStream);
 
-            String name = loadValue(properties,NAME,true);
+            String name = file.getName();
+            name = name.substring(0,name.indexOf("."));
             dataSourceConfig.setName(name);
             String url = loadValue(properties,URL,true);
             dataSourceConfig.setUrl(url);

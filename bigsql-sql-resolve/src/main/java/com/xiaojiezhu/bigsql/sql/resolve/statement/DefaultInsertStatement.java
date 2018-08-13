@@ -72,7 +72,7 @@ public class DefaultInsertStatement extends InsertStatement {
                 while (iterator.hasNext()){
                     TableStat.Column column = iterator.next();
                     SQLExpr sqlExpr = values.get(j);
-                    valueFields.add(new ValueField(column.getName(),Arrays.asList(sqlExpr.toString())));
+                    valueFields.add(new ValueField(column.getName(),sqlExpr.toString()));
                     j++;
                 }
                 this.valueFieldsList.add(valueFields);

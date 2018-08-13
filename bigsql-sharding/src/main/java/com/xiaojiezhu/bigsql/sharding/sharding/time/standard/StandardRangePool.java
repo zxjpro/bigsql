@@ -6,7 +6,10 @@ import com.xiaojiezhu.bigsql.sql.resolve.field.Expression;
 import com.xiaojiezhu.bigsql.util.DateUtils;
 import com.xiaojiezhu.bigsql.util.TypeUtil;
 
+import javax.swing.text.InternationalFormatter;
+import java.text.ParseException;
 import java.util.*;
+import java.util.concurrent.RecursiveTask;
 
 /**
  * @author xiaojie.zhu
@@ -94,11 +97,17 @@ public class StandardRangePool {
 
         Expression startExpression = expressions.get(0);
         Expression endExpression = expressions.get(1);
-        Date startDate = (Date) startExpression.getValue();
-        Date endDate = (Date) endExpression.getValue();
-        if(startDate == null || endDate == null){
-            throw new BigSqlException(200 , "range date must not be null");
+        Date startDate = null;
+        Date endDate = null;
+        try {
+            startDate = TypeUtil.parseDate(String.valueOf(startExpression.getValue()));
+            endDate = TypeUtil.parseDate(String.valueOf(endExpression.getValue()));
+        } catch (ParseException e) {
+            throw new BigSqlException(200 , "parse str to date error :" + e.getMessage() , e);
         }
+
+        startDate = this.rangeStartDate(startDate);
+        endDate = this.rangeEndDate(endDate);
 
         List<ShardingTable> shardingTables = new LinkedList<>();
 
@@ -110,9 +119,100 @@ public class StandardRangePool {
             tmp = this.incrementDate(tmp);
         }
 
+/*        if(isExcess(endDate)){
+            shardingTables.add(getShardingTable(tmp));
+        }*/
+
+
         return shardingTables;
 
     }
+
+    private Date rangeEndDate(Date endDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(endDate);
+        if(StandardRange.YEAR.equals(this.rangeFormat)){
+            calendar.set(Calendar.MONTH , 11);
+            calendar.set(Calendar.HOUR_OF_DAY , 23);
+            calendar.set(Calendar.MINUTE , 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND  ,999);
+
+            int maxDayOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+            calendar.set(Calendar.DAY_OF_MONTH , maxDayOfMonth);
+
+        }else if(StandardRange.MONTH.equals(this.rangeFormat)){
+            calendar.set(Calendar.HOUR_OF_DAY , 23);
+            calendar.set(Calendar.MINUTE , 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND  ,999);
+
+            int maxDayOfMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH);
+            calendar.set(Calendar.DAY_OF_MONTH , maxDayOfMonth);
+
+        }else if(StandardRange.DAY.equals(this.rangeFormat)){
+            calendar.set(Calendar.HOUR_OF_DAY , 23);
+            calendar.set(Calendar.MINUTE , 59);
+            calendar.set(Calendar.SECOND, 59);
+            calendar.set(Calendar.MILLISECOND  ,999);
+
+        }else{
+            throw new BigSqlException(300 , "not support rangeFormat : " + this.rangeFormat);
+        }
+
+        return calendar.getTime();
+    }
+
+
+    private Date rangeStartDate(Date startDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        if(StandardRange.YEAR.equals(this.rangeFormat)){
+            calendar.set(Calendar.MONTH , 0);
+            calendar.set(Calendar.DAY_OF_MONTH , 1);
+            calendar.set(Calendar.HOUR_OF_DAY , 0);
+            calendar.set(Calendar.MINUTE , 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND  ,0);
+
+        }else if(StandardRange.MONTH.equals(this.rangeFormat)){
+            calendar.set(Calendar.DAY_OF_MONTH , 1);
+            calendar.set(Calendar.HOUR_OF_DAY , 0);
+            calendar.set(Calendar.MINUTE , 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND  ,0);
+
+        }else if(StandardRange.DAY.equals(this.rangeFormat)){
+            calendar.set(Calendar.HOUR_OF_DAY , 0);
+            calendar.set(Calendar.MINUTE , 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND  ,0);
+
+        }else{
+            throw new BigSqlException(300 , "not support rangeFormat : " + this.rangeFormat);
+        }
+
+        return calendar.getTime();
+    }
+
+    private boolean isExcess(Date endDate){
+        String excess;
+        if(StandardRange.YEAR.equals(this.rangeFormat)){
+            excess = DateUtils.format(endDate,"MMddHHmmssSSS");
+        }else if(StandardRange.MONTH.equals(this.rangeFormat)){
+            excess = DateUtils.format(endDate , "ddHHmmssSSS");
+        }else if(StandardRange.DAY.equals(this.rangeFormat)){
+            excess = DateUtils.format(endDate , "HHmmssSSS");
+        }else{
+            throw new BigSqlException(300 , "not support rangeFormat : " + this.rangeFormat);
+        }
+
+        long l = Long.parseLong(excess);
+
+        return l > 0;
+    }
+
+
 
     private Date incrementDate(Date date){
         Calendar calendar = Calendar.getInstance();
@@ -142,6 +242,9 @@ public class StandardRangePool {
     public ShardingTable getShardingTable(Date date){
         String shardingTableName = getShardingTableName(date);
         StandardRange range = findRange(date);
+        if(range == null){
+            throw new NullPointerException("not found standard rage for date : " + date);
+        }
         return new ShardingTable(shardingTableName , range.getDataSourceName());
 
     }
