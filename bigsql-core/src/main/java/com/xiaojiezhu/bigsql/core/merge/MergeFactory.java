@@ -1,9 +1,14 @@
 package com.xiaojiezhu.bigsql.core.merge;
 
+import com.sun.org.apache.bcel.internal.generic.RET;
+import com.xiaojiezhu.bigsql.common.SqlConstant;
 import com.xiaojiezhu.bigsql.common.exception.SqlParserException;
+import com.xiaojiezhu.bigsql.core.merge.fn.MaxMerge;
+import com.xiaojiezhu.bigsql.core.merge.fn.MinMerge;
+import com.xiaojiezhu.bigsql.core.merge.fn.SumMerge;
+import com.xiaojiezhu.bigsql.core.merge.groupby.GroupByMerge;
 import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
 import com.xiaojiezhu.bigsql.sql.resolve.field.SimpleField;
-import com.xiaojiezhu.bigsql.sql.resolve.field.SortField;
 import com.xiaojiezhu.bigsql.sql.resolve.statement.DefaultCommandSelectStatement;
 
 import java.sql.ResultSet;
@@ -20,23 +25,41 @@ public class MergeFactory {
 
     /**
      * get a merge
-     * @param database
-     * @param table
+     * @param databaseName
+     * @param tableName
      * @param selectStatement
      * @param resultSets
      * @return
      */
-    public static Merge getMerge(String database, String table, DefaultCommandSelectStatement selectStatement, List<ResultSet> resultSets){
+    public static Merge getMerge(String databaseName, String tableName, DefaultCommandSelectStatement selectStatement, List<ResultSet> resultSets){
         if(selectStatement.getGroupField() != null){
             //group by
-            return getGroupByMerge(database, table, selectStatement, resultSets);
+            return getGroupByMerge(databaseName, tableName, selectStatement, resultSets);
 
         }else if(selectStatement.getOrderField() != null){
             // order by
-            return new OrderByMerge(database, table, resultSets, selectStatement);
+            return new OrderByMerge(databaseName, tableName, resultSets, selectStatement);
 
         }else{
-            return new ItemMerge(database,table,resultSets);
+            List<AliasField> queryField = selectStatement.getQueryField();
+            if(queryField.size() == 1 && AliasField.FieldType.FUNCTION.equals(queryField.get(0).getFieldType())){
+                // function , SUM,COUNT,MAX,MIN
+                AliasField aliasField = queryField.get(0);
+                if(AliasField.FunctionType.COUNT == aliasField.getFunctionType() || AliasField.FunctionType.SUM == aliasField.getFunctionType()){
+                    return new SumMerge(databaseName, tableName, resultSets);
+
+                }else if(AliasField.FunctionType.MAX == aliasField.getFunctionType()){
+                    return new MaxMerge(databaseName,tableName,resultSets);
+
+                }else if(AliasField.FunctionType.MIN == aliasField.getFunctionType()){
+                    return new MinMerge(databaseName, tableName, resultSets);
+
+                }else{
+                    return new ItemMerge(databaseName,tableName,resultSets);
+                }
+            }else{
+                return new ItemMerge(databaseName,tableName,resultSets);
+            }
         }
     }
 

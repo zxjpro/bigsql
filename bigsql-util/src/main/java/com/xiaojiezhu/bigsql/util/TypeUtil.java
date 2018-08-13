@@ -62,4 +62,27 @@ public class TypeUtil {
             throw new ParseException(str + " can not parse java.util.Date",0);
         }
     }
+
+    public static boolean isInteger(Object val){
+        try {
+            long v = Long.parseLong(String.valueOf(val));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static boolean isDouble(Object val) {
+        String value = String.valueOf(val);
+        try {
+            double v = Double.parseDouble(value);
+            if(value.contains(".")){
+                return true;
+            }else{
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

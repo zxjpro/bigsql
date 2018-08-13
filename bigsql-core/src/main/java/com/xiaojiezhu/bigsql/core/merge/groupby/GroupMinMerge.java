@@ -1,5 +1,6 @@
-package com.xiaojiezhu.bigsql.core.merge;
+package com.xiaojiezhu.bigsql.core.merge.groupby;
 
+import com.xiaojiezhu.bigsql.core.merge.fn.MinMerge;
 import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
 
 import java.sql.ResultSet;
@@ -10,6 +11,7 @@ import java.util.List;
  * @author xiaojie.zhu <br>
  */
 public class GroupMinMerge extends GroupByMerge {
+    public static final MinMerge MIN_MERGE = new MinMerge(null,null,null);
 
     public GroupMinMerge(String databaseName, String tableName, List<ResultSet> resultSets, AliasField.FunctionType functionType, int functionIndex, int groupFieldIndex) {
         super(databaseName, tableName, resultSets, functionType, functionIndex, groupFieldIndex);
@@ -17,17 +19,6 @@ public class GroupMinMerge extends GroupByMerge {
 
     @Override
     protected <T> T reduce(T t1, T t2) {
-        if(isInteger(t2)){
-            long l1 = Long.parseLong(String.valueOf(t1));
-            long l2 = Long.parseLong(String.valueOf(t2));
-            Long min = Long.min(l1,l2);
-            return (T) min;
-        }else{
-            double d1 = Double.parseDouble(String.valueOf(t1));
-            double d2 = Double.parseDouble(String.valueOf(t2));
-
-            Double min = Double.min(d1,d2);
-            return (T) min;
-        }
+        return (T) MIN_MERGE.reduce(t1,t2);
     }
 }

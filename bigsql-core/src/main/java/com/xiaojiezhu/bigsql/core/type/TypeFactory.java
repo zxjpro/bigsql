@@ -1,7 +1,9 @@
 package com.xiaojiezhu.bigsql.core.type;
 
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
+import com.xiaojiezhu.bigsql.util.TypeUtil;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -28,6 +30,16 @@ public class TypeFactory {
                 return new BigintType((Long) obj);
             }else if(Boolean.class == clazz || boolean.class == clazz){
                 return new TinyintType((boolean) obj);
+            }else if(BigDecimal.class ==clazz){
+                 BigDecimal bObj = (BigDecimal) obj;
+                String val = bObj.toString();
+                if(TypeUtil.isInteger(val)){
+                    return new BigintType(Long.parseLong(val));
+                }else if(TypeUtil.isDouble(val)){
+                    return new DoubleType(Double.parseDouble(val));
+                }else {
+                    throw new BigSqlException(300 , "not support bigDecimal value : " + val);
+                }
             }else{
                 throw new BigSqlException(400 , "not support type : " + obj.getClass().getName());
             }

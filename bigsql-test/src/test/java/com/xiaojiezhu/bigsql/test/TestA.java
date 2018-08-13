@@ -8,6 +8,7 @@ import com.xiaojiezhu.bigsql.sharding.sharding.time.standard.StandardRange;
 import com.xiaojiezhu.bigsql.sql.resolve.SqlResolveUtil;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
 import com.xiaojiezhu.bigsql.util.DateUtils;
+import com.xiaojiezhu.bigsql.util.TypeUtil;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -109,5 +110,15 @@ public class TestA {
         System.out.println(calendar.getTime().toLocaleString());
     }
 
+
+    @Test
+    public void test7(){
+        Assert.assertFalse(TypeUtil.isInteger("123.06"));
+        Assert.assertTrue(TypeUtil.isInteger("123"));
+        Assert.assertFalse(TypeUtil.isDouble("123"));
+        Assert.assertTrue(TypeUtil.isDouble("123.06"));
+
+
+    }
 
 }

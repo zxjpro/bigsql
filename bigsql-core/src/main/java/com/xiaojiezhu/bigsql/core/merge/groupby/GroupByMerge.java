@@ -1,11 +1,12 @@
-package com.xiaojiezhu.bigsql.core.merge;
+package com.xiaojiezhu.bigsql.core.merge.groupby;
 
-import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.common.exception.MergeException;
 import com.xiaojiezhu.bigsql.common.exception.SqlNotSupportException;
 import com.xiaojiezhu.bigsql.common.exception.SqlParserException;
 import com.xiaojiezhu.bigsql.core.BigsqlResultSet;
 import com.xiaojiezhu.bigsql.core.ResultSetUtil;
+import com.xiaojiezhu.bigsql.core.merge.Merge;
+import com.xiaojiezhu.bigsql.core.merge.MergeFactory;
 import com.xiaojiezhu.bigsql.core.type.Type;
 import com.xiaojiezhu.bigsql.core.type.TypeFactory;
 import com.xiaojiezhu.bigsql.model.construct.Field;
@@ -143,14 +144,7 @@ public abstract class GroupByMerge implements Merge {
         }
     }
 
-    protected static boolean isInteger(Object val){
-        try {
-            long v = Long.parseLong(String.valueOf(val));
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
+
 
     public static GroupByMerge getMerge(String databaseName, String tableName, List<ResultSet> resultSets, AliasField.FunctionType functionType, int functionIndex, int groupFieldIndex){
         if(AliasField.FunctionType.COUNT == functionType){

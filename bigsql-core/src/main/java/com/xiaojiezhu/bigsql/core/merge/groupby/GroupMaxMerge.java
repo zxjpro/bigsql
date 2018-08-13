@@ -1,5 +1,6 @@
-package com.xiaojiezhu.bigsql.core.merge;
+package com.xiaojiezhu.bigsql.core.merge.groupby;
 
+import com.xiaojiezhu.bigsql.core.merge.fn.MaxMerge;
 import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
 
 import java.sql.ResultSet;
@@ -10,6 +11,7 @@ import java.util.List;
  * @author xiaojie.zhu <br>
  */
 public class GroupMaxMerge extends GroupByMerge {
+    public static final MaxMerge MAX_MERGE = new MaxMerge(null,null,null);
 
     public GroupMaxMerge(String databaseName, String tableName, List<ResultSet> resultSets, AliasField.FunctionType functionType, int functionIndex, int groupFieldIndex) {
         super(databaseName, tableName, resultSets, functionType, functionIndex, groupFieldIndex);
@@ -17,17 +19,6 @@ public class GroupMaxMerge extends GroupByMerge {
 
     @Override
     protected <T> T reduce(T t1, T t2) {
-        if(isInteger(t2)){
-            long l1 = Long.parseLong(String.valueOf(t1));
-            long l2 = Long.parseLong(String.valueOf(t2));
-            Long max = Long.max(l1,l2);
-            return (T) max;
-        }else{
-            double d1 = Double.parseDouble(String.valueOf(t1));
-            double d2 = Double.parseDouble(String.valueOf(t2));
-
-            Double max = Double.max(d1,d2);
-            return (T) max;
-        }
+        return (T) MAX_MERGE.reduce(t1,t2);
     }
 }

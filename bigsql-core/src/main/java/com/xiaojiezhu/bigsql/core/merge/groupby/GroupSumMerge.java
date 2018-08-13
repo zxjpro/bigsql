@@ -1,5 +1,6 @@
-package com.xiaojiezhu.bigsql.core.merge;
+package com.xiaojiezhu.bigsql.core.merge.groupby;
 
+import com.xiaojiezhu.bigsql.core.merge.fn.SumMerge;
 import com.xiaojiezhu.bigsql.sql.resolve.field.AliasField;
 
 import java.sql.ResultSet;
@@ -10,6 +11,7 @@ import java.util.List;
  * @author xiaojie.zhu <br>
  */
 public class GroupSumMerge extends GroupByMerge {
+    public static SumMerge SUM_MERGE = new SumMerge(null,null,null);
 
     public GroupSumMerge(String databaseName, String tableName, List<ResultSet> resultSets, AliasField.FunctionType functionType, int functionIndex, int groupFieldIndex) {
         super(databaseName, tableName, resultSets, functionType, functionIndex, groupFieldIndex);
@@ -17,17 +19,6 @@ public class GroupSumMerge extends GroupByMerge {
 
     @Override
     protected <T> T reduce(T t1, T t2) {
-        if(isInteger(t2)){
-            long l1 = Long.parseLong(String.valueOf(t1));
-            long l2 = Long.parseLong(String.valueOf(t2));
-            Long val = l1 + l2;
-            return (T) val;
-        }else{
-            double d1 = Double.parseDouble(String.valueOf(t1));
-            double d2 = Double.parseDouble(String.valueOf(t2));
-
-            Double val = d1 + d2;
-            return (T) val;
-        }
+        return (T) SUM_MERGE.reduce(t1,t2);
     }
 }
