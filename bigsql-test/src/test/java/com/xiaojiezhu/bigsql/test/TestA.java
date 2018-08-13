@@ -62,11 +62,12 @@ public class TestA {
 
     @Test
     public void test4() throws ParseException {
+        Assert.assertTrue("2017-11-11".matches("([\\d]{4}?)-([\\d]+?)-([\\d]+?)"));
         Assert.assertTrue("2018-01-01".matches("([\\d]{4}?)-([\\d]+?)-([\\d]+?)"));
         Assert.assertTrue("2018-2-01".matches("([\\d]{4}?)-([\\d]+?)-([\\d]+?)"));
         Assert.assertTrue("2018-2-9".matches("([\\d]{4}?)-([\\d]+?)-([\\d]+?)"));
         Assert.assertTrue("2018-02-9".matches("([\\d]{4}?)-([\\d]+?)-([\\d]+?)"));
-            Assert.assertTrue("2018-02-09 10:22:11".matches("([\\d]{4}?)-([\\d]+?)-([\\d]+?) ([\\d]+?):([\\d]+?):([\\d]+)"));
+        Assert.assertTrue("2018-02-09 10:22:11".matches("([\\d]{4}?)-([\\d]+?)-([\\d]+?) ([\\d]+?):([\\d]+?):([\\d]+)"));
 
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date parse = format.parse("2018-3-9 9:8:12");

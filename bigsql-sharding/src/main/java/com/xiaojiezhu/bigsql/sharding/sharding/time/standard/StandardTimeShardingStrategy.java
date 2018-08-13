@@ -4,6 +4,7 @@ import com.xiaojiezhu.bigsql.common.SqlConstant;
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.common.exception.NotSupportException;
 import com.xiaojiezhu.bigsql.sharding.ShardingTable;
+import com.xiaojiezhu.bigsql.sharding.SqlUtil;
 import com.xiaojiezhu.bigsql.sharding.rule.sharding.ShardingRule;
 import com.xiaojiezhu.bigsql.sharding.sharding.AbstractSingleColumnShardingStrategy;
 import com.xiaojiezhu.bigsql.sql.resolve.field.ConditionField;
@@ -13,6 +14,7 @@ import com.xiaojiezhu.bigsql.sql.resolve.statement.CrudStatement;
 import com.xiaojiezhu.bigsql.util.BeanUtil;
 import com.xiaojiezhu.bigsql.util.TypeUtil;
 
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -84,15 +86,19 @@ public class StandardTimeShardingStrategy extends AbstractSingleColumnShardingSt
             value = new Date();
         }
         if(!TypeUtil.isDate(value)){
-            throw new BigSqlException(300 , "standard time sharding value must be date");
-        }else{
-            Date date = (Date) value;
-            ShardingTable shardingTable = this.standardRangePool.getShardingTable(date);
-            if(shardingTable == null){
-                throw new BigSqlException(300, "not found a shardingTable , tableName:" + this.logicTableName + " , date : " + value);
-            }else{
-                return Collections.singletonList(shardingTable);
+            try {
+                value = TypeUtil.parseDate(String.valueOf(value).replaceAll("'",""));
+            } catch (ParseException e) {
+                throw new BigSqlException(200 , value + " can not parse date ");
             }
+        }
+
+        Date date = (Date) value;
+        ShardingTable shardingTable = this.standardRangePool.getShardingTable(date);
+        if(shardingTable == null){
+            throw new BigSqlException(300, "not found a shardingTable , tableName:" + this.logicTableName + " , date : " + value);
+        }else{
+            return Collections.singletonList(shardingTable);
         }
     }
 

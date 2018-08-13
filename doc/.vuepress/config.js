@@ -3,6 +3,7 @@ module.exports = {
 		sidebar: {
 			'/guide/' : [
 				'',
+				'noun_introduce',
 				'tips',
 				'config_datasource',
 				'create_logic_database',
