@@ -1,7 +1,5 @@
 package com.xiaojiezhu.bigsql.core.merge;
 
-import com.sun.org.apache.bcel.internal.generic.RET;
-import com.xiaojiezhu.bigsql.common.SqlConstant;
 import com.xiaojiezhu.bigsql.common.exception.SqlParserException;
 import com.xiaojiezhu.bigsql.core.merge.fn.MaxMerge;
 import com.xiaojiezhu.bigsql.core.merge.fn.MinMerge;
