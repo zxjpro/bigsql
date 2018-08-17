@@ -46,7 +46,6 @@
     <loggers>
         <logger name="com.xiaojiezhu.bigsql" level="debug"></logger>
         <logger name="DEBUG" level="debug"></logger>
-        <logger name="DEBUG" level="debug"></logger>
 
 
         <root level="info">
