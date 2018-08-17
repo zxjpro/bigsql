@@ -4,25 +4,37 @@ import com.xiaojiezhu.bigsql.server.bootstrap.Bootstrap;
 import com.xiaojiezhu.bigsql.server.bootstrap.netty.DefaultBootstrap;
 import com.xiaojiezhu.bigsql.server.config.BigSqlConfig;
 import com.xiaojiezhu.bigsql.server.config.ConfigLoader;
-import com.xiaojiezhu.bigsql.server.config.DefaultConfigLoader;
+import com.xiaojiezhu.bigsql.server.config.FileConfigLoader;
 import com.xiaojiezhu.bigsql.util.Asserts;
+import com.xiaojiezhu.bigsql.util.EnvUtil;
+
+import java.io.File;
+import java.net.URI;
 
 /**
  * main class
+ *
  * @author xiaojie.zhu
  */
 public class BigsqlServer {
-    private static final String DEFAULT_CONFIG_PATH = "config/bigsql.properties";
-    // TODO update config source
-    private static ConfigLoader configLoader = new DefaultConfigLoader();
 
-    public static void main(String[] args)  {
+    private static ConfigLoader configLoader = new FileConfigLoader();
+
+    public static void main(String[] args) {
         BigSqlConfig bigSqlConfig = configLoader.loadConfig(args);
-        Asserts.notNull(bigSqlConfig,"bigsql config can not be null");
+        Asserts.notNull(bigSqlConfig, "bigsql config can not be null");
 
-        // TODO: reload log4j2.xml to other path
+        initLog4j2();
         Bootstrap bootstrap = new DefaultBootstrap();
         bootstrap.startServer(bigSqlConfig);
 
+    }
+
+    private static void initLog4j2() {
+        File f = new File(EnvUtil.getBigsqlConfPath() + "log4j2.xml");
+        URI fc = f.toURI();
+        org.apache.logging.log4j.core.Logger l = (org.apache.logging.log4j.core.Logger) org.apache.logging.log4j.LogManager
+                .getLogger(org.apache.logging.log4j.LogManager.ROOT_LOGGER_NAME);
+        l.getContext().setConfigLocation(fc);
     }
 }

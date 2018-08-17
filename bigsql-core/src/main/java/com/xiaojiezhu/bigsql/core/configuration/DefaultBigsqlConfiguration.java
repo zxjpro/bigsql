@@ -4,6 +4,7 @@ import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
 import com.xiaojiezhu.bigsql.model.constant.ColumnType;
 import com.xiaojiezhu.bigsql.model.construct.LikeField;
 import com.xiaojiezhu.bigsql.util.BigsqlSystem;
+import com.xiaojiezhu.bigsql.util.EnvUtil;
 import com.xiaojiezhu.bigsql.util.IOUtil;
 
 import java.io.File;
@@ -19,25 +20,19 @@ import java.util.Map;
  * @author xiaojie.zhu <br>
  */
 public class DefaultBigsqlConfiguration implements BigsqlConfiguration {
-    private static final String CONF_PATH_NAME = "bigsql.conf";
+
     private BigsqlEnvironment environment;
     private BigsqlVariable variable;
     private String confPath;
+    private String password;
 
 
-    public DefaultBigsqlConfiguration() {
-        String confPath = System.getProperty(CONF_PATH_NAME);
-        if(confPath == null){
-            BigsqlSystem.exit(CONF_PATH_NAME + " property not found");
-            return;
+    public DefaultBigsqlConfiguration(String password) {
+        this.password = password;
+        this.confPath = EnvUtil.getBigsqlConfPath();
+        if(!new File(this.confPath).exists()){
+            BigsqlSystem.exit(this.confPath + " not exists");
         }
-        if(!new File(confPath).exists()){
-            BigsqlSystem.exit(confPath + " not exists");
-        }
-        if(!confPath.endsWith(File.separator)){
-            confPath = confPath + File.separator;
-        }
-        this.confPath = confPath;
 
         try {
             this.reload();
@@ -81,6 +76,11 @@ public class DefaultBigsqlConfiguration implements BigsqlConfiguration {
         }else{
             return Integer.parseInt(executeConcurrent);
         }
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password;
     }
 
 

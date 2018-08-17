@@ -45,5 +45,7 @@ public interface BigsqlConfiguration extends Reloadable {
      */
     int getExecuteConcurrent();
 
+    String getPassword();
+
 
 }

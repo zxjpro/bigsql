@@ -48,8 +48,7 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
 
     private ConnectionIdCreator connectionIdCreator = SimpleConnectionIdCreator.getInstance();
     private AuthRandom authRandom = new AuthRandom();
-    // TODO : modify login
-    private AuthenticationService authenticationService = new DefaultAuthenticationService();
+    private AuthenticationService authenticationService = new DefaultAuthenticationService(bigsqlContext.getBigsqlConfiguration());
     private boolean auth;
     private PacketResponse packetResponse = SimplePacketResponse.getInstance();
 

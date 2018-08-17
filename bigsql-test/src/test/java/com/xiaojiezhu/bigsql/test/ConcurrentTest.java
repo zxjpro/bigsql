@@ -29,7 +29,7 @@ public class ConcurrentTest {
 
     public static Connection createConnection()  {
         try {
-            return ConnectionUtil.get231();
+            return ConnectionUtil.get222Sharding();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -54,7 +54,7 @@ public class ConcurrentTest {
                     }
                 }
 
-                String sql = "insert into person_1(name,age,sex,tel,create_time) values(?,"+count.get()+",?,?,now())";
+                String sql = "insert into person(name,age,sex,tel,create_time) values(?,"+count.get()+",?,?,now())";
                 PreparedStatement statement = null;
                 try {
                     statement = connection.prepareStatement(sql);
@@ -69,7 +69,6 @@ public class ConcurrentTest {
                     System.out.println(val);
 
                     long start = System.currentTimeMillis();
-//                    String sql = "insert into person(name,age,sex,tel,create_time) value(?,"+j+",?,?,now())";
 
                     try {
 

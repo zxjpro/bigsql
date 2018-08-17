@@ -85,4 +85,18 @@ public class TypeUtil {
             return false;
         }
     }
+
+    public static <T> T parseValue(String value , Class<T> t){
+        if(t == int.class || t == Integer.class){
+            Integer i = Integer.parseInt(value);
+            return (T) i;
+        }else if(t == Double.class || t == double.class){
+            Double d = Double.parseDouble(value);
+            return (T) d;
+        }else if(t == String.class){
+            return (T) value;
+        }else{
+            throw new RuntimeException("not support type : " + t);
+        }
+    }
 }

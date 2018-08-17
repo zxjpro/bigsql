@@ -34,16 +34,19 @@ public class DefaultBootstrap implements Bootstrap {
     private BigsqlContext context;
 
     public DefaultBootstrap() {
-        try {
-            context = SimpleBigsqlContext.createInstance();
-        } catch (Exception e) {
-            LOG.info("create bigsql context fail" , e);
-            System.exit(0);
-        }
+
     }
 
     @Override
     public void startServer(final BigSqlConfig bigSqlConfig) {
+
+        try {
+            context = SimpleBigsqlContext.createInstance(bigSqlConfig.getPassword());
+        } catch (Exception e) {
+            LOG.info("create bigsql context fail" , e);
+            System.exit(0);
+        }
+
         ServerBootstrap bootstrap = new ServerBootstrap();
         bossGroup = createBossGroup(bigSqlConfig.getBossThread());
         if(bossGroup instanceof EpollEventLoopGroup){

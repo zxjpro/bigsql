@@ -11,8 +11,8 @@ public class BigSqlConfig {
     private int workerThread = Runtime.getRuntime().availableProcessors() * 2;
     private int bigSqlThread = 512;
     private int executeConcurrent = 5;
+    private String password = "123";
 
-    //TODO : 这里的参数还没有设置到System.setProperties()
     private BigSqlConfig() {
     }
 
@@ -28,6 +28,14 @@ public class BigSqlConfig {
         return port;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public void setPort(int port) {
         this.port = port;
     }
@@ -40,9 +48,7 @@ public class BigSqlConfig {
         this.executeConcurrent = executeConcurrent;
     }
 
-    public static BigSqlConfig getInstance(){
-        return Instance.INSTANCE;
-    }
+
 
     public int getBossThread() {
         return bossThread;
@@ -70,5 +76,9 @@ public class BigSqlConfig {
 
     private static class Instance{
         private static final BigSqlConfig INSTANCE = new BigSqlConfig();
+    }
+
+    public static BigSqlConfig getInstance(){
+        return Instance.INSTANCE;
     }
 }

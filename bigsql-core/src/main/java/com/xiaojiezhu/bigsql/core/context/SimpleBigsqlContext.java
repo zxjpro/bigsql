@@ -32,10 +32,10 @@ public class SimpleBigsqlContext implements BigsqlContext {
     private final StrategyPool strategyPool;
 
 
-    private SimpleBigsqlContext() throws Exception {
+    private SimpleBigsqlContext(String password) throws Exception {
         this.connectionContextMap = new HashMap<>();
 
-        this.configuration = new DefaultBigsqlConfiguration();
+        this.configuration = new DefaultBigsqlConfiguration(password);
 
         this.confDirPath = this.getBigsqlConfiguration().getConfDirPath();
 
@@ -52,8 +52,8 @@ public class SimpleBigsqlContext implements BigsqlContext {
 
     }
 
-    public static SimpleBigsqlContext createInstance() throws Exception {
-        SimpleBigsqlContext context = new SimpleBigsqlContext();
+    public static SimpleBigsqlContext createInstance(String password) throws Exception {
+        SimpleBigsqlContext context = new SimpleBigsqlContext(password);
         return context;
     }
 
