@@ -1,6 +1,7 @@
 # select @@session.auto_increment_increment,@@license
 
 @@session.auto_increment_increment=1
+@@default_storage_engine=InnoDB
 @@session.tx_read_only=0
 @@session.tx_isolation=REPEATABLE-READ
 @@character_set_client=utf8mb4
