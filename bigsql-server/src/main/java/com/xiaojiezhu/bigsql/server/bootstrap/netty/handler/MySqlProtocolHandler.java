@@ -101,17 +101,17 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
 
             String sql = commandPacket.getSql();
             if(sql != null){
-                LOG.info(sql);
+                LOG.info(commandPacket.getCommandType() + " : " + sql);
                 //TODO: 需要改成异步的方式
                 Statement statement = null;
                 try {
                     statement = StatementHelper.parse(commandPacket.getCommandType(),commandPacket.getSql());
                 } catch (SqlParserException e) {
-                    LOG.error("sql parser error : " + e.getMessage());
+                    LOG.error("sql parser error : " + e.getMessage() , e);
                     packetResponse.response(ctx , new MySqlErrorOutputPacket(1,e.getCode(),"",e.getMessage()));
                     return;
                 }catch (Throwable e){
-                    LOG.error("sql parser error : " + e.getMessage());
+                    LOG.error("sql parser error : " + e.getMessage() , e);
                     packetResponse.response(ctx , new MySqlErrorOutputPacket(1, 500 ,"" , e.getMessage()));
                     return;
                 }

@@ -112,12 +112,13 @@ public class TestA {
 
 
     @Test
-    public void test7(){
+    public void test7() throws ParseException {
         Assert.assertFalse(TypeUtil.isInteger("123.06"));
         Assert.assertTrue(TypeUtil.isInteger("123"));
         Assert.assertFalse(TypeUtil.isDouble("123"));
         Assert.assertTrue(TypeUtil.isDouble("123.06"));
 
+        Date date = TypeUtil.parseDate("2018-08-20 10:53:11.964");
 
     }
 

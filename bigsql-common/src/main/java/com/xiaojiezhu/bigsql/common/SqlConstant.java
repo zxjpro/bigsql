@@ -49,6 +49,10 @@ public class SqlConstant {
 
 
 
+    public static final String INFORMATION_SCHEMA = "information_schema";
+
+
+
 
 
     public static final List<String> MYSQL_DATABASE = new ArrayList<>();

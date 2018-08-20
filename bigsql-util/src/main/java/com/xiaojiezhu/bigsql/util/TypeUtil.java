@@ -14,6 +14,7 @@ public class TypeUtil {
     private static final List<Class<?>> NUMBER_TYPES = Arrays.asList(Integer.class,int.class,Double.class,double.class,Float.class,float.class,Short.class,short.class,Long.class,long.class,Long.class);
     public static final String YMD = "([\\d]{4}?)-([\\d]+?)-([\\d]+?)";
     public static final String YMDHMS = "([\\d]{4}?)-([\\d]+?)-([\\d]+?) ([\\d]+?):([\\d]+?):([\\d]+)";
+    public static final String YMDHMSS = "([\\d]{4}?)-([\\d]+?)-([\\d]+?) ([\\d]+?):([\\d]+?):([\\d]+)\\.([\\d]+)";
 
     public static boolean isNumber(Object obj){
         Class<?> aClass = obj.getClass();
@@ -56,6 +57,8 @@ public class TypeUtil {
             return DateUtils.parse(str , "yyyy-MM-dd");
         }else if(str.matches(YMDHMS)){
             return DateUtils.parse(str ,"yyyy-MM-dd HH:mm:ss");
+        }else if(str.matches(YMDHMSS)){
+            return DateUtils.parse(str , "yyyy-MM-dd HH:mm:ss.SSS");
         }else{
             throw new ParseException(str + " can not parse java.util.Date",0);
         }

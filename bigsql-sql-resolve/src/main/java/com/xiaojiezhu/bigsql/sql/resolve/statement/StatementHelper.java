@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.sun.jmx.snmp.ThreadContext.contains;
+
 /**
  * @author xiaojie.zhu
  */
@@ -36,6 +38,20 @@ public class StatementHelper {
     }
 
     private static Statement parseComQuery(String sql)throws SqlParserException{
+        String a = "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'sharding' UNION SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'sharding' UNION SELECT COUNT(*) FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA = 'sharding'";
+        if(a.equals(sql)){
+            return new NoHandlerStatement(sql);
+        }
+        if("SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'sharding' UNION SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'sharding' UNION SELECT COUNT(*) FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA = 'sharding'".equals(sql)){
+            return new NoHandlerStatement(sql);
+        }
+        if("SELECT TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE FROM information_schema.TABLES WHERE TABLE_SCHEMA = 'sharding' ORDER BY TABLE_SCHEMA, TABLE_TYPE".equals(sql)){
+            return new NoHandlerStatement(sql);
+        }
+        if("SELECT TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME, COLUMN_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = 'sharding' ORDER BY TABLE_SCHEMA, TABLE_NAME".equals(sql)){
+            return new NoHandlerStatement(sql);
+        }
+
         List<SQLStatement> sqlStatements = null;
         try {
             sqlStatements = SQLUtils.parseStatements(sql, Constant.SQL_TYPE);
@@ -56,8 +72,6 @@ public class StatementHelper {
                     Statement statement = SimpleSelectStatement.parse(sql);
                     return statement;
                 }else{
-                    //TODO select from table
-
                     sqlStatement.accept(visitor);
                     DefaultCommandSelectStatement selectStatement = new DefaultCommandSelectStatement(sql,sqlStatement,visitor);
                     selectStatement.setResponseNull(isResponseNull(visitor));
@@ -113,9 +127,16 @@ public class StatementHelper {
         Map<TableStat.Name, TableStat> tables = visitor.getTables();
         Set<TableStat.Name> names = tables.keySet();
         for (TableStat.Name name : names) {
-            if(name.toString().contains(".")){
+            String nameStr = name.toString();
+
+            if(nameStr.contains(".")){
                 //return true;
-                throw new BigSqlException(200 , "not allow use an other database");
+                String[] split = nameStr.split("\\.");
+                if(SqlConstant.INFORMATION_SCHEMA.equalsIgnoreCase(split[0])){
+                    return true;
+                }else{
+                    throw new BigSqlException(200 , "not allow use an other database");
+                }
             }
         }
         return false;
