@@ -79,7 +79,7 @@ public class DefaultCurrentStatement implements CurrentStatement {
             throw new RuntimeException("startTime or mergeCompleteTime is 0 , startTime:" + this.startTime + " , mergeCompleteTime:" + this.mergeCompleteTime);
         }
         this.endTime = System.currentTimeMillis();
-        if(getUseTime() > 1){
+        if(getUseTime() > this.slowQueryTimeOut){
             LoggerUtil.SLOW.warn(this.toString());
         }
     }
