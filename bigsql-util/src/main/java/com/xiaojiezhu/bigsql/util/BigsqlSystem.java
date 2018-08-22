@@ -16,4 +16,7 @@ public class BigsqlSystem {
         System.exit(0);
     }
 
+    public static String getProperty(String key) {
+        return System.getProperty(key);
+    }
 }

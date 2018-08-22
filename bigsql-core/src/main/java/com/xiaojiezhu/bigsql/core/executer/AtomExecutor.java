@@ -1,6 +1,9 @@
 package com.xiaojiezhu.bigsql.core.executer;
 
 import com.xiaojiezhu.bigsql.common.SqlConstant;
+import com.xiaojiezhu.bigsql.core.configuration.datasource.BigsqlConnection;
+import com.xiaojiezhu.bigsql.core.context.CurrentStatement;
+import com.xiaojiezhu.bigsql.core.context.ShardingBlock;
 import com.xiaojiezhu.bigsql.core.tx.TransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,19 +26,26 @@ public class AtomExecutor implements Runnable{
     private final Object lock;
 
     private final TransactionManager transactionManager;
+    private final CurrentStatement currentStatement;
 
 
-    public AtomExecutor(List<ExecuteResult> executeResults, Connection connection, String sql, CountDownLatch cd , Object lock, TransactionManager transactionManager) {
+    public AtomExecutor(List<ExecuteResult> executeResults, Connection connection, String sql, CountDownLatch cd , Object lock, TransactionManager transactionManager, CurrentStatement currentStatement) {
         this.executeResults = executeResults;
         this.connection = connection;
         this.sql = sql;
         this.cd = cd;
         this.lock = lock;
         this.transactionManager = transactionManager;
+        this.currentStatement = currentStatement;
     }
 
     @Override
     public void run() {
+        ShardingBlock block = new ShardingBlock();
+        block.setSql(this.sql);
+        block.start();
+        String dataSourceName = ((BigsqlConnection) connection).getDataSourceName();
+        block.setDataSourceName(dataSourceName);
         ExecuteResult executeResult = new ExecuteResult();
         try {
             Statement statement = connection.createStatement();
@@ -55,12 +65,18 @@ public class AtomExecutor implements Runnable{
             transactionManager.returnConnection(connection);
         }
         synchronized (lock){
+            block.end();
+            this.currentStatement.addBlock(block);
+
             executeResults.add(executeResult);
-            cd.countDown();
             LOG.debug("atom execute success : " + Thread.currentThread().getName());
+            cd.countDown();
         }
 
     }
 
-
+    @Override
+    public String toString() {
+        return this.sql;
+    }
 }

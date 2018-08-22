@@ -1,10 +1,13 @@
 package com.xiaojiezhu.bigsql.server.bootstrap.netty.handler;
 
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
+import com.xiaojiezhu.bigsql.common.exception.NotSupportException;
 import com.xiaojiezhu.bigsql.common.exception.SqlParserException;
 import com.xiaojiezhu.bigsql.core.auth.AuthenticationService;
 import com.xiaojiezhu.bigsql.core.auth.DefaultAuthenticationService;
 import com.xiaojiezhu.bigsql.core.context.BigsqlContext;
+import com.xiaojiezhu.bigsql.core.context.ConnectionContext;
+import com.xiaojiezhu.bigsql.core.context.DefaultCurrentStatement;
 import com.xiaojiezhu.bigsql.core.invoker.InitDataBaseStatementInvoker;
 import com.xiaojiezhu.bigsql.core.invoker.StatementInvoker;
 import com.xiaojiezhu.bigsql.core.invoker.StatementInvokerHelper;
@@ -102,6 +105,10 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
             String sql = commandPacket.getSql();
             if(sql != null){
                 LOG.info(commandPacket.getCommandType() + " : " + sql);
+
+                ConnectionContext connectionContext = bigsqlContext.getConnectionContext(ctx.channel());
+                connectionContext.setCurrentStatement(new DefaultCurrentStatement(sql,bigsqlContext.getBigsqlConfiguration().getSlowQueryTimeOut()));
+
                 //TODO: 需要改成异步的方式
                 Statement statement = null;
                 try {
@@ -128,7 +135,7 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
                     // ping
                     packetResponse.response(ctx,new MySqlOkOutputPacket(1));
                 }else{
-                    LOG.warn("收到一个为空的SQL，这是代码有问题");
+                    throw new NotSupportException("not support command type : " + commandPacket.getCommandType());
                 }
             }
         }

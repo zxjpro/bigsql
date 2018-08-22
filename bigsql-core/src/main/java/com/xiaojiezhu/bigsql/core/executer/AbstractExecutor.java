@@ -2,6 +2,8 @@ package com.xiaojiezhu.bigsql.core.executer;
 
 import com.xiaojiezhu.bigsql.common.FixRunner;
 import com.xiaojiezhu.bigsql.common.exception.BigSqlException;
+import com.xiaojiezhu.bigsql.core.context.ConnectionContext;
+import com.xiaojiezhu.bigsql.core.context.CurrentStatement;
 import com.xiaojiezhu.bigsql.core.tx.TransactionManager;
 import com.xiaojiezhu.bigsql.sharding.DataSourcePool;
 import com.xiaojiezhu.bigsql.sharding.ExecuteBlock;
@@ -23,7 +25,9 @@ import java.util.concurrent.CountDownLatch;
 public abstract class AbstractExecutor<T> implements Executor<T> {
     public final static Logger LOG = LoggerFactory.getLogger(AbstractExecutor.class);
 
+    protected final ConnectionContext connectionContext;
     protected final TransactionManager transactionManager;
+    protected final CurrentStatement currentStatement;
     protected final EventLoopGroup group;
     protected int concurrent;
     private boolean execute = false;
@@ -33,13 +37,14 @@ public abstract class AbstractExecutor<T> implements Executor<T> {
 
     /**
      *
-     * @param transactionManager
+     * @param connectionContext
      * @param group
      * @param concurrent the concurrent execute number
      */
-    public AbstractExecutor(TransactionManager transactionManager, EventLoopGroup group,int concurrent) {
-
-        this.transactionManager = transactionManager;
+    public AbstractExecutor(ConnectionContext connectionContext, EventLoopGroup group, int concurrent) {
+        this.connectionContext = connectionContext;
+        this.transactionManager = connectionContext.getTransactionManager();
+        this.currentStatement = connectionContext.getCurrentStatement();
         this.group = group;
         this.concurrent = concurrent;
     }
@@ -63,10 +68,12 @@ public abstract class AbstractExecutor<T> implements Executor<T> {
                 throw new BigSqlException(400,"can not create connection , dataSourceName : " + executeBlock.getDataSourceName());
             }
 
-            AtomExecutor executor = new AtomExecutor(executeResults,connection,executeBlock.getSql() , cd , lock,transactionManager);
+            AtomExecutor executor = new AtomExecutor(executeResults,connection,executeBlock.getSql() , cd , lock,transactionManager,currentStatement);
             fixRunner.run(executor);
         }
         cd.await();
+        //sql execute complete
+        currentStatement.executeComplete();
     }
 
 

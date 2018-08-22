@@ -83,6 +83,11 @@ public class DefaultBigsqlConfiguration implements BigsqlConfiguration {
         return this.password;
     }
 
+    @Override
+    public int getSlowQueryTimeOut() {
+        return Integer.parseInt(BigsqlSystem.getProperty("bigsql.slowQueryTimeOut"));
+    }
+
 
     private void loadEnvironment() {
         String filePath = confPath + "env"+ File.separator +"environment";

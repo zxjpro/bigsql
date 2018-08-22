@@ -8,12 +8,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 /**
  * @author xiaojie.zhu
  */
 public class FileConfigLoader implements ConfigLoader{
+    public static final List<String> EXCLUDE_FIELD = Arrays.asList("password");
 
     public static final String BIGSQL_PROPERTIES_PATH = "bigsql.properties";
 
@@ -46,6 +49,15 @@ public class FileConfigLoader implements ConfigLoader{
                     Class<?> type = field.getType();
                     field.set(bigSqlConfig , TypeUtil.parseValue(value , type));
                 } catch (Throwable e) {
+                    e.printStackTrace();
+                    BigsqlSystem.exit("read config error , " + e.getMessage());
+                }
+            }
+
+            if(!EXCLUDE_FIELD.contains(name)){
+                try {
+                    System.setProperty("bigsql." + name , String.valueOf(field.get(bigSqlConfig)));
+                } catch (Exception e) {
                     e.printStackTrace();
                     BigsqlSystem.exit("read config error , " + e.getMessage());
                 }

@@ -13,6 +13,11 @@ public class BigSqlConfig {
     private int executeConcurrent = 5;
     private String password = "123";
 
+    /**
+     * slow query time out ,millisecond
+     */
+    private int slowQueryTimeOut = 1000;
+
     private BigSqlConfig() {
     }
 
@@ -38,6 +43,14 @@ public class BigSqlConfig {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    public int getSlowQueryTimeOut() {
+        return slowQueryTimeOut;
+    }
+
+    public void setSlowQueryTimeOut(int slowQueryTimeOut) {
+        this.slowQueryTimeOut = slowQueryTimeOut;
     }
 
     public int getExecuteConcurrent() {

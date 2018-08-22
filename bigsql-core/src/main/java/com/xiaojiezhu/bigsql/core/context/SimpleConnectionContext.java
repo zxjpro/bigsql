@@ -10,9 +10,18 @@ import com.xiaojiezhu.bigsql.sharding.DataSourcePool;
  * @author xiaojie.zhu <br>
  */
 public class SimpleConnectionContext implements ConnectionContext{
+    /**
+     * current use database
+     */
     private String currentDatabase;
     private TransactionManager transactionManager;
     private DataSourcePool dataSourcePool;
+
+    /**
+     * this client current execute statement
+     */
+    private CurrentStatement currentStatement;
+
 
     public SimpleConnectionContext(DataSourcePool dataSourcePool) {
         this.dataSourcePool = dataSourcePool;
@@ -32,6 +41,16 @@ public class SimpleConnectionContext implements ConnectionContext{
     @Override
     public TransactionManager getTransactionManager() {
         return transactionManager;
+    }
+
+    @Override
+    public void setCurrentStatement(CurrentStatement currentStatement) {
+        this.currentStatement = currentStatement;
+    }
+
+    @Override
+    public CurrentStatement getCurrentStatement() {
+        return this.currentStatement;
     }
 
     @Override

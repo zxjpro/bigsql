@@ -5,6 +5,7 @@ import com.xiaojiezhu.bigsql.common.exception.InvokeStatementException;
 import com.xiaojiezhu.bigsql.core.BigsqlResultSet;
 import com.xiaojiezhu.bigsql.core.context.BigsqlContext;
 import com.xiaojiezhu.bigsql.core.context.ConnectionContext;
+import com.xiaojiezhu.bigsql.core.context.CurrentStatement;
 import com.xiaojiezhu.bigsql.core.executer.Executor;
 import com.xiaojiezhu.bigsql.core.executer.QueryExecutor;
 import com.xiaojiezhu.bigsql.core.invoker.result.DefaultSelectInvokeResult;
@@ -101,7 +102,7 @@ public class CrudStatementInvoker extends StatementInvoker {
         if(strategy instanceof ShardingStrategy){
             //invoke sharding
             InvokeResult invokeResult;
-            Executor<?> executor = new QueryExecutor(connectionContext.getTransactionManager(),loopGroup,context.getBigsqlConfiguration().getExecuteConcurrent());
+            Executor<?> executor = new QueryExecutor(connectionContext,loopGroup,context.getBigsqlConfiguration().getExecuteConcurrent());
 
             try {
                 invokeResult = invokeShardingTable((ShardingStrategy) strategy, executor, table.getName());
@@ -114,7 +115,7 @@ public class CrudStatementInvoker extends StatementInvoker {
         }else if(strategy instanceof MasterSlaveStrategy){
             //invoke master slave
             InvokeResult invokeResult;
-            Executor<?> executor = new QueryExecutor(connectionContext.getTransactionManager(),loopGroup,context.getBigsqlConfiguration().getExecuteConcurrent());
+            Executor<?> executor = new QueryExecutor(connectionContext,loopGroup,context.getBigsqlConfiguration().getExecuteConcurrent());
 
             try {
                 invokeResult = invokeMasterSlaveTable(table, (MasterSlaveStrategy) strategy, executor);
@@ -151,6 +152,10 @@ public class CrudStatementInvoker extends StatementInvoker {
     private InvokeResult invokeMasterSlaveTable(StrategyTable table, MasterSlaveStrategy strategy, Executor<?> executor) {
         InvokeResult invokeResult;ExecuteBlock executeBlock = strategy.getExecuteBlock();
         invokeResult = executeResult(executor, table.getName(),Arrays.asList(executeBlock));
+
+        //merge sharding table complete
+        connectionContext.getCurrentStatement().mergeComplete();
+
         return invokeResult;
     }
 
@@ -164,9 +169,12 @@ public class CrudStatementInvoker extends StatementInvoker {
     private InvokeResult invokeShardingTable(ShardingStrategy shardingStrategy,Executor<?> executor,String tableName){
         List<ExecuteBlock> executeBlockList = shardingStrategy.getExecuteBlockList();
         Asserts.collectionIsNotNull(executeBlockList,"execute block list can not be null");
-        //LOG.debug("sharding sql list : " + executeBlockList);
+        InvokeResult invokeResult = executeResult(executor, tableName, executeBlockList);
 
-        return executeResult(executor, tableName, executeBlockList);
+        //merge sharding table complete
+        CurrentStatement currentStatement = connectionContext.getCurrentStatement();
+        currentStatement.mergeComplete();
+        return invokeResult;
     }
 
 
@@ -178,20 +186,23 @@ public class CrudStatementInvoker extends StatementInvoker {
      * @return
      */
     private InvokeResult executeResult(Executor<?> executor, String tableName, List<ExecuteBlock> executeBlockList) {
+        InvokeResult invokeResult = null;
         if(CrudType.SELECT.equals(((CrudStatement) statement).getCrudType())){
             List<ResultSet> executeResult = getExecuteResult(executor,executeBlockList);
 
             Merge merge = MergeFactory.getMerge(databaseName, tableName, (DefaultCommandSelectStatement) statement, executeResult);
             ResultSet resultSet = merge.merge();
-            return DefaultSelectInvokeResult.createInstance(resultSet);
+            invokeResult = DefaultSelectInvokeResult.createInstance(resultSet);
         }else{
             //insert,update,delete
             List<Integer> executeResult = getExecuteResult(executor, executeBlockList);
             long count = BeanUtil.count(executeResult);
             ExecuteInvokeResult executeInvokeResult = new ExecuteInvokeResult(true);
             executeInvokeResult.setAffectRow((int) count);
-            return executeInvokeResult;
+            invokeResult = executeInvokeResult;
         }
+
+        return invokeResult;
     }
 
 

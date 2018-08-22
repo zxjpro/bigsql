@@ -45,7 +45,17 @@ public interface BigsqlConfiguration extends Reloadable {
      */
     int getExecuteConcurrent();
 
+    /**
+     * get root password
+     * @return
+     */
     String getPassword();
+
+    /**
+     * get slow query time out , ms
+     * @return
+     */
+    int getSlowQueryTimeOut();
 
 
 }

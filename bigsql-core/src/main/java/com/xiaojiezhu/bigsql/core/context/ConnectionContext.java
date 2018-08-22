@@ -29,6 +29,18 @@ public interface ConnectionContext {
      */
     TransactionManager getTransactionManager();
 
+    /**
+     * set the current client execute statement
+     * @param currentStatement
+     */
+    void setCurrentStatement(CurrentStatement currentStatement);
+
+    /**
+     * get the current client execute statement
+     * @return
+     */
+    CurrentStatement getCurrentStatement();
+
 
     /**
      * destroy

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author xiaojie.zhu <br>
  */
-public class LoogerUtil {
+public class LoggerUtil {
 
     public final static Logger FULL_SCAN = LoggerFactory.getLogger("FULL_SCAN");
     public final static Logger SLOW = LoggerFactory.getLogger("SLOW");
