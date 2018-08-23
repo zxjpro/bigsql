@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.sun.jmx.snmp.ThreadContext.contains;
 
 /**
  * @author xiaojie.zhu

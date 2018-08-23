@@ -1,5 +1,7 @@
 package com.xiaojiezhu.bigsql.core.context;
 
+import com.xiaojiezhu.bigsql.util.StringUtil;
+
 /**
  * time 2018/8/22 16:45
  *
@@ -65,6 +67,6 @@ public class ShardingBlock {
 
     @Override
     public String toString() {
-        return "\t" + dataSourceName + "\t" + sql.replaceAll("\\\n"," ") + "\t" + useTime;
+        return "\t" + dataSourceName + "\t" + StringUtil.removeBlank1(sql) + "\t" + useTime;
     }
 }

@@ -1,6 +1,7 @@
 package com.xiaojiezhu.bigsql.core.context;
 
 import com.xiaojiezhu.bigsql.common.LoggerUtil;
+import com.xiaojiezhu.bigsql.util.StringUtil;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -118,7 +119,8 @@ public class DefaultCurrentStatement implements CurrentStatement {
         for (ShardingBlock block : blocks) {
             sb.append(block).append("\n");
         }
-        return sql + "\t" + this.getUseTime() + "("+this.getExecuteUseTime()+","+this.getMergeUseTime()+")\n" + sb;
+        String formatSql = StringUtil.removeBlank1(sql);
+        return formatSql + "\t" + this.getUseTime() + "("+this.getExecuteUseTime()+","+this.getMergeUseTime()+")\n" + sb;
     }
 
     public String toString0() {

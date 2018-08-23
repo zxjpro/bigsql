@@ -27,17 +27,16 @@ public class BigsqlServer {
         BigSqlConfig bigSqlConfig = configLoader.loadConfig(args);
         Asserts.notNull(bigSqlConfig, "bigsql config can not be null");
 
-        initLog4j2();
+        initLog4j2(new File(EnvUtil.getBigsqlConfPath()).getParent());
 
         Bootstrap bootstrap = new DefaultBootstrap();
         bootstrap.startServer(bigSqlConfig);
 
-        initLog4j2();
-
 
     }
 
-    private static void initLog4j2() {
+    private static void initLog4j2(String logPath) {
+        System.setProperty("log.path",logPath);
         File log4jFile = new File(EnvUtil.getBigsqlConfPath() + "log4j2.xml");
         try {
             ConfigurationSource source = new ConfigurationSource(new FileInputStream(log4jFile), log4jFile);
