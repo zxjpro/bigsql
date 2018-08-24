@@ -49,6 +49,8 @@ public class AtomExecutor implements Runnable{
         ExecuteResult executeResult = new ExecuteResult();
         try {
             Statement statement = connection.createStatement();
+            //保存创建statement成功的时间
+            block.completeCreateStatement();
             Object result;
             if(sql.startsWith(SqlConstant.SELECT)){
                 result = statement.executeQuery(sql);
@@ -62,15 +64,18 @@ public class AtomExecutor implements Runnable{
             executeResult.setResult(false);
             executeResult.setE(e);
         } finally {
+            block.completeQuery();
             transactionManager.returnConnection(connection);
         }
-        synchronized (lock){
-            block.end();
-            this.currentStatement.addBlock(block);
 
+        block.completeReturn();
+        this.currentStatement.addBlock(block);
+
+        synchronized (lock){
             executeResults.add(executeResult);
             LOG.debug("atom execute success : " + Thread.currentThread().getName());
             cd.countDown();
+            block.end();
         }
 
     }

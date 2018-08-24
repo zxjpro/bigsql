@@ -172,8 +172,7 @@ public class CrudStatementInvoker extends StatementInvoker {
         InvokeResult invokeResult = executeResult(executor, tableName, executeBlockList);
 
         //merge sharding table complete
-        CurrentStatement currentStatement = connectionContext.getCurrentStatement();
-        currentStatement.mergeComplete();
+        connectionContext.getCurrentStatement().mergeComplete();
         return invokeResult;
     }
 

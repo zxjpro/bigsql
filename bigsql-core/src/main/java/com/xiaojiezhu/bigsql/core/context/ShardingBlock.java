@@ -22,6 +22,18 @@ public class ShardingBlock {
     private long startTime;
 
     /**
+     * 创建statement成功的时间
+     */
+    private long completeCreateStatementTime;
+
+    /**
+     * 完成SQL操作的时间
+     */
+    private long completeQueryTime;
+
+    private long completeReturnTime;
+
+    /**
      * sql execute over time
      */
     private long endTime;
@@ -65,8 +77,45 @@ public class ShardingBlock {
         this.useTime = this.endTime - this.startTime;
     }
 
+
+    public void completeCreateStatement() {
+        this.completeCreateStatementTime = System.currentTimeMillis();
+    }
+
+    public void completeQuery() {
+        this.completeQueryTime = System.currentTimeMillis();
+    }
+
+    public void completeReturn() {
+        this.completeReturnTime = System.currentTimeMillis();
+    }
+
+
+    /**
+     * 创建statement所需要的时间
+     * @return
+     */
+    public long getCreateStatementUseTime(){
+        return this.completeCreateStatementTime - this.startTime;
+    }
+
+    public long getQueryUseTime(){
+        return this.completeQueryTime - this.completeCreateStatementTime;
+    }
+
+    public long getReturnConnectionUseTime(){
+        return this.completeReturnTime - this.completeQueryTime;
+    }
+
+    public long getLockWaitUseTime(){
+        return this.endTime - this.completeReturnTime;
+    }
+
+
     @Override
     public String toString() {
-        return "\t" + dataSourceName + "\t" + StringUtil.removeBlank1(sql) + "\t" + useTime;
+        return "\t" + dataSourceName + "\t" + StringUtil.removeBlank1(sql) + "\t" + useTime + "("+this.getCreateStatementUseTime()+","+getQueryUseTime()+","+getReturnConnectionUseTime()+","+getLockWaitUseTime()+")";
     }
+
+
 }
