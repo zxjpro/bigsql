@@ -3,6 +3,8 @@
 #### 项目介绍
 mysql分库分表中间件，实现了mysql-server协议，任何语言及客户端都可以使用，包括mysql图形化工具，navicat等，配置简单。
 
+**[中文文档](http://www.open-bigsql.org/ "document")**
+
 **[DOCUMENT](http://www.open-bigsql.org/ "document")**
 
 # 系统架构
