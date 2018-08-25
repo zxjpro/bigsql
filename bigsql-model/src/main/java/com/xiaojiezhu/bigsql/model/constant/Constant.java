@@ -46,6 +46,12 @@ public class Constant {
     public static final String ENGINES_NAME = "ENGINES";
     public static final String BIGSQL_DEV = "bigsql.dev";
 
+    /**
+     * database:bigsql , connection 's table
+     */
+    public static final String BIGSQL_CONNECTION = "CONNECTION";
+    public static final String BIGSQL_CONNECTION_POOL = "CONNECTION_POOL";
+
 
 
 

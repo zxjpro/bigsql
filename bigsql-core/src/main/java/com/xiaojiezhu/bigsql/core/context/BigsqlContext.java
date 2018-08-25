@@ -7,6 +7,8 @@ import com.xiaojiezhu.bigsql.sharding.DataSourcePool;
 import com.xiaojiezhu.bigsql.sharding.StrategyPool;
 import io.netty.channel.Channel;
 
+import java.util.List;
+
 /**
  * @author xiaojie.zhu
  */
@@ -56,6 +58,12 @@ public interface BigsqlContext {
      * @return
      */
     StrategyPool getStrategyPool();
+
+    /**
+     * get all connections
+     * @return
+     */
+    List<ConnectionContext> getConnectionContexts();
 
 
     /**

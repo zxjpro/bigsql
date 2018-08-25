@@ -13,8 +13,7 @@ import com.xiaojiezhu.bigsql.sharding.StrategyPool;
 import io.netty.channel.Channel;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * call createInstance to create instance
@@ -98,6 +97,22 @@ public class SimpleBigsqlContext implements BigsqlContext {
     @Override
     public StrategyPool getStrategyPool() {
         return strategyPool;
+    }
+
+    @Override
+    public List<ConnectionContext> getConnectionContexts() {
+        if(connectionContextMap != null && connectionContextMap.size() > 0){
+            List<ConnectionContext> connectionContexts = new LinkedList<>();
+            Iterator<Map.Entry<Channel, ConnectionContext>> iterator = connectionContextMap.entrySet().iterator();
+            while (iterator.hasNext()){
+                Map.Entry<Channel, ConnectionContext> entry = iterator.next();
+                connectionContexts.add(entry.getValue());
+            }
+
+            return connectionContexts;
+        }else{
+            return null;
+        }
     }
 
 

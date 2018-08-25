@@ -13,6 +13,8 @@ module.exports = {
                 'master_slave',
                 'full_scan_table',
 				'transaction',
+				'bigsql_function',
+				'bigsql_database',
                 'increment_key',
                 'plugin',
 				'keyword',

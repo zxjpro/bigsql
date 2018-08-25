@@ -22,8 +22,26 @@ public class SimpleConnectionContext implements ConnectionContext{
      */
     private CurrentStatement currentStatement;
 
+    /**
+     * current login username
+     */
+    private String userName;
+
+    private final long connectionTime;
+
+    /**
+     * the connection id
+     */
+    private int connectionId = -1;
+
+    /**
+     * the connection host
+     */
+    private String host;
+
 
     public SimpleConnectionContext(DataSourcePool dataSourcePool) {
+        this.connectionTime = System.currentTimeMillis();
         this.dataSourcePool = dataSourcePool;
         this.transactionManager = new TraditionTransactionManager(dataSourcePool);
     }
@@ -56,6 +74,41 @@ public class SimpleConnectionContext implements ConnectionContext{
     @Override
     public void destroy() {
         transactionManager.rollback();
+    }
+
+    @Override
+    public void setUserName(String username) {
+        this.userName = username;
+    }
+
+    @Override
+    public String getUserName() {
+        return this.userName;
+    }
+
+    @Override
+    public void setConnectionId(int connectionId) {
+        this.connectionId = connectionId;
+    }
+
+    @Override
+    public int getConnectionId() {
+        return this.connectionId;
+    }
+
+    @Override
+    public long getConnectionTime() {
+        return this.connectionTime;
+    }
+
+    @Override
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    @Override
+    public String getHost() {
+        return this.host;
     }
 
 

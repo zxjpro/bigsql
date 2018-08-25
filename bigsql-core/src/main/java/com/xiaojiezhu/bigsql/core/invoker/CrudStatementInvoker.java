@@ -17,6 +17,7 @@ import com.xiaojiezhu.bigsql.core.merge.MergeFactory;
 import com.xiaojiezhu.bigsql.core.schema.Schema;
 import com.xiaojiezhu.bigsql.core.schema.database.LogicDatabase;
 import com.xiaojiezhu.bigsql.core.schema.table.LogicTable;
+import com.xiaojiezhu.bigsql.core.schema.table.MemoryTable;
 import com.xiaojiezhu.bigsql.core.schema.table.StrategyTable;
 import com.xiaojiezhu.bigsql.core.tx.TransactionManager;
 import com.xiaojiezhu.bigsql.sharding.ExecuteBlock;
@@ -79,6 +80,9 @@ public class CrudStatementInvoker extends StatementInvoker {
                 throw new InvokeStatementException("invoke table fail : " + e.getMessage() , e);
             }
             return invokeResult;
+        }else if(table instanceof MemoryTable){
+            ResultSet resultSet = ((MemoryTable) table).getResultSet();
+            return DefaultSelectInvokeResult.createInstance(resultSet);
         }else{
             throw new BigSqlException(300, "not support table  , " + table.getDatabaseName() +"." + table.getName());
         }

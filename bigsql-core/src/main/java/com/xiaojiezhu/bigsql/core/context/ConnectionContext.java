@@ -46,4 +46,46 @@ public interface ConnectionContext {
      * destroy
      */
     void destroy();
+
+    /**
+     * set the login username
+     * @param username
+     */
+    void setUserName(String username);
+
+    /**
+     * get the current connection login username
+     * @return
+     */
+    String getUserName();
+
+    /**
+     * set connection id
+     * @param connectionId
+     */
+    void setConnectionId(int connectionId);
+
+    /**
+     * get the connection id
+     * @return
+     */
+    int getConnectionId();
+
+    /**
+     * get connection time
+     * @return
+     */
+    long getConnectionTime();
+
+    /**
+     * the connection host
+     * @param host
+     */
+    void setHost(String host);
+
+    /**
+     * get host
+     * @return
+     */
+    String getHost();
 }

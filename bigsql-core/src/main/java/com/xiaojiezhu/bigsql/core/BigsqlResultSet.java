@@ -90,7 +90,11 @@ public class BigsqlResultSet implements ResultSet {
         }
         try {
             Type type = current[columnIndex - 1];
-            return type.getValue();
+            if(type == null){
+                return null;
+            }else{
+                return type.getValue();
+            }
         } catch (Exception e) {
             throw new IndexOutOfBoundsException("the columnIndex:" + columnIndex + " is out of " + current.length);
         }

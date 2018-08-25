@@ -1,7 +1,10 @@
 package com.xiaojiezhu.bigsql.test;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.pool.DruidPooledConnection;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
+import com.alibaba.druid.util.DruidDataSourceUtils;
 import com.alibaba.druid.util.JdbcConstants;
 import com.xiaojiezhu.bigsql.sharding.rule.masterslave.DefaultMasterSlaveRule;
 import com.xiaojiezhu.bigsql.sharding.sharding.time.standard.StandardRange;
@@ -13,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.File;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -119,6 +123,59 @@ public class TestA {
         Assert.assertTrue(TypeUtil.isDouble("123.06"));
 
         Date date = TypeUtil.parseDate("2018-08-20 10:53:11.964");
+
+    }
+
+    @Test
+    public void testDs() throws SQLException {
+        DruidDataSource ds = new DruidDataSource();
+        ds.setUrl("jdbc:mysql://192.168.31.233:3306/saas?useUnicode=true&characterEncoding=utf8&useSSL=false");
+        ds.setUsername("root");
+        ds.setPassword("123456");
+        ds.setMaxActive(34);
+
+
+        DruidPooledConnection connection = ds.getConnection();
+        DruidPooledConnection connection1 = ds.getConnection();
+        DruidPooledConnection connection2 = ds.getConnection();
+        DruidPooledConnection connection3 = ds.getConnection();
+
+        System.out.println("当前激活的数量" + ds.getActiveCount());
+        System.out.println(ds.getActivePeak());
+        System.out.println();
+
+        System.out.println("connectionCount:" + ds.getConnectCount());
+        System.out.println("closeCount:" + ds.getCloseCount());
+
+        System.out.println("创建连接的数量:" + ds.getCreateCount());
+
+        connection.close();
+
+        System.out.println("当前激活的数量" + ds.getActiveCount());
+        System.out.println(ds.getActivePeak());
+        System.out.println();
+
+        DruidPooledConnection connection4 = ds.getConnection();
+        System.out.println("当前激活的数量" + ds.getActiveCount());
+        System.out.println("激活的峰值" + ds.getActivePeak());
+        System.out.println();
+
+        System.out.println("允许的最大激活数量：" + ds.getMaxActive());
+
+        System.out.println(ds.getPoolingCount());
+        System.out.println(ds.getPoolingPeak());
+        System.out.println();
+
+
+        System.out.println("connectionCount:" + ds.getConnectCount());
+        System.out.println("closeCount:" + ds.getCloseCount());
+
+        System.out.println("创建连接的数量:" + ds.getCreateCount());
+
+        int poolingCount = ds.getPoolingCount();
+        System.out.println(poolingCount);
+
+
 
     }
 

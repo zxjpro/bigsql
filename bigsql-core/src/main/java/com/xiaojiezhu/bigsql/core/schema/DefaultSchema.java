@@ -9,6 +9,8 @@ import com.xiaojiezhu.bigsql.core.schema.database.LogicDatabase;
 import com.xiaojiezhu.bigsql.core.schema.database.MasterSlaveDatabase;
 import com.xiaojiezhu.bigsql.core.schema.database.SimpleLogicDatabase;
 import com.xiaojiezhu.bigsql.core.schema.table.LogicTable;
+import com.xiaojiezhu.bigsql.core.schema.table.bigsql.ConnectionPoolTable;
+import com.xiaojiezhu.bigsql.core.schema.table.bigsql.ConnectionTable;
 import com.xiaojiezhu.bigsql.model.constant.Constant;
 import com.xiaojiezhu.bigsql.sharding.rule.masterslave.DefaultMasterSlaveRule;
 import org.slf4j.Logger;
@@ -113,26 +115,13 @@ public class DefaultSchema implements Schema {
     }
 
 
-    public static LogicDatabase getBigsqlDatabase(){
+    public LogicDatabase getBigsqlDatabase(){
         SimpleLogicDatabase database = new SimpleLogicDatabase(Constant.DEFAULT_DATABASE_NAME);
         Map<String,LogicTable> tables = new HashMap<>();
 
-/*        List<Field> fields = new ArrayList<>();
-        fields.add(Field.createField("Engine",64,ColumnType.VARCHAR));
-        fields.add(Field.createField("Support",64,ColumnType.VARCHAR));
-        fields.add(Field.createField("Component",64,ColumnType.VARCHAR));
-        fields.add(Field.createField("Transactions",64,ColumnType.VARCHAR));
-        fields.add(Field.createField("XA",64,ColumnType.VARCHAR));
-        fields.add(Field.createField("Savepoints",64,ColumnType.VARCHAR));
+        tables.put(Constant.BIGSQL_CONNECTION,new ConnectionTable(Constant.BIGSQL_CONNECTION , Constant.DEFAULT_DATABASE_NAME , context));
+        tables.put(Constant.BIGSQL_CONNECTION_POOL,new ConnectionPoolTable(Constant.BIGSQL_CONNECTION_POOL , Constant.DEFAULT_DATABASE_NAME , context));
 
-        List<Object[]> rowData = new ArrayList<>();
-        rowData.add(new Object[]{"InnoDB","DEFAULT","Supports transactions, row-level locking, and foreign keys","YES","YES","YES"});
-        rowData.add(new Object[]{"MyISAM","YES","MyISAM storage engine","NO","NO","NO"});
-
-        BigsqlResultSet resultSet = BigsqlResultSet.createInstance(fields, rowData);
-
-        LogicTable table = new SimpleMemoryTable("ENGINES",fields, resultSet);
-        tables.put("ENGINES",table);*/
         database.setTables(tables);
         return database;
     }

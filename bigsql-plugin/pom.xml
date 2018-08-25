@@ -9,25 +9,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>bigsql-sharding</artifactId>
+    <artifactId>bigsql-plugin</artifactId>
 
 
     <dependencies>
         <dependency>
             <groupId>com.xiaojiezhu.bigsql</groupId>
-            <artifactId>bigsql-sql-resolve</artifactId>
+            <artifactId>bigsql-plugin-support</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.xiaojiezhu.bigsql</groupId>
-            <artifactId>bigsql-common</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.xiaojiezhu.bigsql</groupId>
-            <artifactId>bigsql-plugin</artifactId>
-        </dependency>
-
     </dependencies>
 
 </project>

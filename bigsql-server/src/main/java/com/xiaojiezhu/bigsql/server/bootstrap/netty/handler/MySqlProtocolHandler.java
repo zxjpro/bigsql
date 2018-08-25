@@ -37,6 +37,7 @@ import io.netty.channel.EventLoopGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -85,7 +86,14 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
     }
 
     private void handshake(ChannelHandlerContext ctx) {
-        MySqlHandshakeOutputPacket packet = new MySqlHandshakeOutputPacket(0,connectionIdCreator.get(),authRandom);
+        int connectionId = connectionIdCreator.get();
+        MySqlHandshakeOutputPacket packet = new MySqlHandshakeOutputPacket(0, connectionId ,authRandom);
+        ConnectionContext connectionContext = bigsqlContext.getConnectionContext(ctx.channel());
+        connectionContext.setConnectionId(connectionId);
+
+        InetSocketAddress insocket = (InetSocketAddress) ctx.channel().remoteAddress();
+        String ip = insocket.getAddress().getHostAddress();
+        connectionContext.setHost(ip);
         packetResponse.response(ctx,packet);
     }
 
@@ -206,8 +214,9 @@ public class MySqlProtocolHandler extends AbstractProtocolHandler<ByteBuf> {
         }
         boolean login = authenticationService.login(packet.getUsername(), packet.getPassword(), authRandom.getR3());
         if(login){
-            this.auth = true;
             LOG.debug("user:" + packet.getUsername() + " login success");
+            this.auth = true;
+            bigsqlContext.getConnectionContext(ctx.channel()).setUserName(packet.getUsername());
             MySqlOkOutputPacket okPacket = new MySqlOkOutputPacket(packet.getSequenceId() + 1);
             okPacket.setServerStatus(StatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
             packetResponse.response(ctx,okPacket);

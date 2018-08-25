@@ -17,6 +17,8 @@
         <module>bigsql-sql-resolve</module>
         <module>bigsql-common</module>
         <module>bigsql-sharding</module>
+        <module>bigsql-plugin</module>
+        <module>bigsql-plugin-support</module>
     </modules>
 
     <properties>
@@ -63,6 +65,17 @@
             <dependency>
                 <groupId>com.xiaojiezhu.bigsql</groupId>
                 <artifactId>bigsql-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.xiaojiezhu.bigsql</groupId>
+                <artifactId>bigsql-plugin</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.xiaojiezhu.bigsql</groupId>
+                <artifactId>bigsql-plugin-support</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
